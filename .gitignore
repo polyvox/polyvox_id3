@@ -2,7 +2,7 @@
 /deps
 erl_crash.dump
 *.ez
-
+/doc
 
 # -*- mode: gitignore; -*-
 *~
