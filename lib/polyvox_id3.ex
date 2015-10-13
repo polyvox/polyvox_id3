@@ -3,17 +3,16 @@ defmodule Polyvox.ID3 do
 
   # See http://elixir-lang.org/docs/stable/elixir/Application.html
   # for more information on OTP Applications
-  def start(_type, _args) do
-    import Supervisor.Spec, warn: false
-
-    children = [
-      # Define workers and child supervisors to be supervised
-      # worker(Polyvox.ID3.Worker, [arg1, arg2, arg3]),
-    ]
-
-    # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
-    # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: Polyvox.ID3.Supervisor]
-    Supervisor.start_link(children, opts)
+  def start(_, _) do
+		Polyvox.ID3.Supervisor.start_link
   end
+
+	@doc """
+	Gets the pid of a `TagReader` to read the ID3 tags found in
+	the file located at path.
+	"""
+	@spec get_reader(binary) :: {:ok, pid} | {:error, term}
+	def get_reader(path) do
+		Polyvox.ID3.Supervisor.get_reader(path)
+	end
 end

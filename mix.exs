@@ -7,7 +7,8 @@ defmodule Polyvox.ID3.Mixfile do
      elixir: "~> 1.1",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
-     deps: deps]
+     deps: deps,
+		 docs: docs]
   end
 
   # Configuration for the OTP application
@@ -31,4 +32,8 @@ defmodule Polyvox.ID3.Mixfile do
     [{:earmark, "~> 0.1", only: :dev},
 		 {:ex_doc, "~> 0.10", only: :dev}]
   end
+
+	defp docs do
+		[extras: ["README.md"], main: "extra-readme"]
+	end
 end
