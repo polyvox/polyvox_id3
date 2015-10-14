@@ -8,7 +8,7 @@ defmodule Polyvox.ID3.TagReader do
 	@doc """
 	Starts a tag reader for the file at the specified path.
 	"""
-	@spec start_link(binary) :: {:ok, pid} | {:error, term}
+	@Spec start_link(binary) :: {:ok, pid} | {:error, term}
 	def start_link(path) do
 		GenServer.start_link(__MODULE__, path)
 	end
@@ -16,9 +16,9 @@ defmodule Polyvox.ID3.TagReader do
 	@doc """
 	Gets the tags read from the file.
 	"""
-	@spec tags(pid) :: list(Polyvox.ID3.Tag.t) | :notready
-	def tags(tag_reader) do
-		GenServer.call(tag_reader, :tags)
+	@spec tag(pid) :: list(Polyvox.ID3.Tag.t) | :notready
+	def tag(tag_reader) do
+		GenServer.call(tag_reader, :tag)
 	end
 
 	@doc """
@@ -38,11 +38,11 @@ defmodule Polyvox.ID3.TagReader do
 		end
 	end
 
-	def handle_call(:tags, _, {:unparsed, _} = s) do
+	def handle_call(:tag, _, {:unparsed, _} = s) do
 		{:reply, :notready, s}
 	end
 
-	def handle_call(:tags, _, {:parsed, tags} = s) do
+	def handle_call(:tag, _, {:parsed, tags} = s) do
 		{:reply, tags, s}
 	end
 
