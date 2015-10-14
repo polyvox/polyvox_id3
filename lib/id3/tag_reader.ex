@@ -1,6 +1,8 @@
 defmodule Polyvox.ID3.TagReader do
 	use GenServer
 
+	defstruct v1: nil
+
 	@moduledoc """
 	Reads ID3 tags from a file.
 	"""
@@ -8,7 +10,7 @@ defmodule Polyvox.ID3.TagReader do
 	@doc """
 	Starts a tag reader for the file at the specified path.
 	"""
-	@Spec start_link(binary) :: {:ok, pid} | {:error, term}
+	@spec start_link(binary) :: {:ok, pid} | {:error, term}
 	def start_link(path) do
 		GenServer.start_link(__MODULE__, path)
 	end
@@ -30,12 +32,8 @@ defmodule Polyvox.ID3.TagReader do
 	end
 
 	def init(path) do
-		case File.open(path) do
-			{:ok, device} ->
-				send(self, :parse)
-				{:ok, {:unparsed, device}}
-			e -> e
-		end
+		run_task(Polyvox.ID3.Readers.VersionOne, path)
+		{:ok, {:unparsed, %Polyvox.ID3.TagReader{}}}
 	end
 
 	def handle_call(:tag, _, {:unparsed, _} = s) do
@@ -50,8 +48,15 @@ defmodule Polyvox.ID3.TagReader do
 		{:stop, :normal, state}
 	end
 
-	def handle_info(:parse, {:unparsed, device}) do
-		File.close(device)
-		{:noreply, {:parsed, "It's all good!"}}
+	def handle_info({:error, :v1, reason}, {state, struct}) do
+		{:stop, {:error, reason}, state}
+	end
+
+	def handle_info({:v1, tag}, {state, struct}) do
+		{:noreply, {:parsed, %Polyvox.ID3.TagReader{struct | v1: tag}}}
+	end
+	
+	defp run_task(module, path) do
+		Task.start(module, :parse, [%{path: path, caller: self}])
 	end
 end
