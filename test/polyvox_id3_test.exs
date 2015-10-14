@@ -14,6 +14,8 @@ defmodule Polyvox.ID3Test do
 		assert(%{year: 2012} = tag)
 		assert(%{genre: 101} = tag)
 		assert(%{track_num: 112} = tag)
+		assert(%{s: 325} = tag)
+		assert(%{e: 453} = tag)
 
 		reader |> Polyvox.ID3.TagReader.close
 	end
