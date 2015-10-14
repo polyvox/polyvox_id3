@@ -7,13 +7,13 @@ defmodule Polyvox.ID3Test do
 
 		%{v1: tag} = reader |> get_tag
 
-		assert(%{comment: "Comment"} = tag)
-		assert(%{artist: "Artist"} = tag)
-		assert(%{album: "Album"} = tag)
+		assert(%{summary: "Comment"} = tag)
+		assert(%{participants: "Artist"} = tag)
+		assert(%{podcast: "Album"} = tag)
 		assert(%{title: "Title"} = tag)
 		assert(%{year: 2012} = tag)
-		assert(%{genre: 101} = tag)
-		assert(%{track_num: 112} = tag)
+		assert(%{genres: 101} = tag)
+		assert(%{number: 112} = tag)
 		assert(%{s: 325} = tag)
 		assert(%{e: 453} = tag)
 

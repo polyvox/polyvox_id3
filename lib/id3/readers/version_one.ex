@@ -1,5 +1,5 @@
 defmodule Polyvox.ID3.Readers.VersionOne do
-	defstruct title: nil, artist: nil, album: nil, year: nil, comment: nil, track_num: nil, genre: nil, s: -1, e: -1
+	defstruct title: nil, participants: nil, podcast: nil, year: nil, summary: nil, number: nil, genres: nil, s: -1, e: -1
 
 	def parse(%{path: path, caller: caller}) do
 		File.open(path) |> parse_or_error(caller)
@@ -43,12 +43,12 @@ defmodule Polyvox.ID3.Readers.VersionOne do
 	defp map_to_struct(title, artist, album, year, comment, track_num, genre, start_position, end_position) do
 		%__MODULE__{
 			title: String.rstrip(title, 0),
-			artist: String.rstrip(artist, 0),
-			album: String.rstrip(album, 0),
+			participants: String.rstrip(artist, 0),
+			podcast: String.rstrip(album, 0),
 			year: parse_integer(year),
-			comment: String.rstrip(comment, 0),
-			track_num: convert_integer(track_num),
-			genre: convert_integer(genre),
+			summary: String.rstrip(comment, 0),
+			number: convert_integer(track_num),
+			genres: convert_integer(genre),
 			s: start_position,
 			e: end_position
 		}
