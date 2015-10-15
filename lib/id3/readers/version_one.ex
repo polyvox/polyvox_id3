@@ -1,5 +1,5 @@
 defmodule Polyvox.ID3.Readers.VersionOne do
-	defstruct title: nil, participants: nil, podcast: nil, year: nil, summary: nil, number: nil, genres: nil, s: -1, e: -1
+	defstruct [:title, :participants, :podcast, :year, :summary, :number, :genres, :s, :e]
 
 	def parse(%{path: path, caller: caller}) do
 		File.open(path) |> parse_or_error(caller)
@@ -9,9 +9,12 @@ defmodule Polyvox.ID3.Readers.VersionOne do
 	defp parse_or_error(e, caller), do: e |> inform_error(caller)
 
 	defp do_parse(device) do
-		{:ok, position} = :file.position(device, {:eof, -128})
-		tag = device |> IO.binread(128) |> match_tag(position, position + 128)
-		{device, tag}
+		case :file.position(device, {:eof, -128}) do
+			{:ok, position} -> 
+				tag = device |> IO.binread(128) |> match_tag(position, position + 128)
+				{device, tag}
+			e -> {device, e}
+		end
 	end
 
 	defp match_tag(<< "TAG",
@@ -40,6 +43,10 @@ defmodule Polyvox.ID3.Readers.VersionOne do
 		map_to_struct(title, artist, album, year, comment, "0", genre, start_position, end_position)
 	end
 
+	defp match_tag(_, _, _) do
+		:notfound
+	end
+
 	defp map_to_struct(title, artist, album, year, comment, track_num, genre, start_position, end_position) do
 		%__MODULE__{
 			title: String.rstrip(title, 0),
@@ -63,12 +70,17 @@ defmodule Polyvox.ID3.Readers.VersionOne do
 
 	defp convert_integer(s), do: s |> String.to_char_list |> List.first
 
+	defp send_to({device, {:error, reason}}, caller) do
+		inform_error({:error, reason}, caller)
+		device
+	end
+	
 	defp send_to({device, content}, caller) do
 		send(caller, {:v1, content})
 		device
 	end
 
-	defp inform_error({:error, :enoent}, caller) do
-		send(caller, {:error, :v1, :enoent})
+	defp inform_error({:error, reason}, caller) do
+		send(caller, {:error, :v1, reason})
 	end
 end

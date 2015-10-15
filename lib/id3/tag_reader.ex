@@ -32,8 +32,13 @@ defmodule Polyvox.ID3.TagReader do
 	end
 
 	def init(path) do
-		run_task(Polyvox.ID3.Readers.VersionOne, path)
-		{:ok, {:unparsed, %Polyvox.ID3.TagReader{}}}
+		case File.exists?(path) do
+			true ->
+				run_task(Polyvox.ID3.Readers.VersionOne, path)
+				{:ok, {:unparsed, %Polyvox.ID3.TagReader{}}}
+			_ ->
+				{:stop, :enoent}
+		end
 	end
 
 	def handle_call(:tag, _, {:unparsed, _} = s) do
@@ -48,11 +53,15 @@ defmodule Polyvox.ID3.TagReader do
 		{:stop, :normal, state}
 	end
 
-	def handle_info({:error, :v1, reason}, {state, struct}) do
+	def handle_info({:error, :v1, :einval}, {_, struct}) do
+		{:noreply, {:parsed, %Polyvox.ID3.TagReader{struct | v1: :notfound}}}
+	end
+
+	def handle_info({:error, :v1, reason}, state) do
 		{:stop, {:error, reason}, state}
 	end
 
-	def handle_info({:v1, tag}, {state, struct}) do
+	def handle_info({:v1, tag}, {_, struct}) do
 		{:noreply, {:parsed, %Polyvox.ID3.TagReader{struct | v1: tag}}}
 	end
 	

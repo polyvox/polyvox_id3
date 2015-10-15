@@ -2,6 +2,18 @@ defmodule Polyvox.ID3Test do
   use ExUnit.Case
   doctest Polyvox.ID3
 
+	test "fails on unknown file" do
+		{:error, :enoent} = System.cwd |> Path.join("test/does/not/exist") |> Polyvox.ID3.get_reader
+	end
+
+	test "returns :notfound for file without tag" do
+		{:ok, reader} = System.cwd |> Path.join("mix.lock") |> Polyvox.ID3.get_reader
+
+		assert(%{v1: :notfound} = reader |> get_tag)
+
+		reader |> Polyvox.ID3.TagReader.close
+	end
+
 	test "can read version 1 tag" do
 		{:ok, reader} = System.cwd |> Path.join("test/test.v1") |> Polyvox.ID3.get_reader
 
