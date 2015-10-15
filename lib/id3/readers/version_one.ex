@@ -1,5 +1,5 @@
 defmodule Polyvox.ID3.Readers.VersionOne do
-	defstruct [:title, :participants, :podcast, :year, :summary, :number, :genres, :s, :e]
+	defstruct [:title, :participants, :podcast, :year, :summary, :number, :genres, :s, :e, :size]
 
 	def parse(%{path: path, caller: caller}) do
 		File.open(path) |> parse_or_error(caller)
@@ -57,7 +57,8 @@ defmodule Polyvox.ID3.Readers.VersionOne do
 			number: convert_integer(track_num),
 			genres: convert_integer(genre),
 			s: start_position,
-			e: end_position
+			e: end_position,
+			size: 128
 		}
 	end
 
