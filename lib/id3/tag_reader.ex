@@ -1,7 +1,7 @@
 defmodule Polyvox.ID3.TagReader do
 	use GenServer
 
-	defstruct v1: nil
+	defstruct [:v1, :v2]
 
 	@moduledoc """
 	Reads ID3 tags from a file.

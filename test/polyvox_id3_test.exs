@@ -32,6 +32,26 @@ defmodule Polyvox.ID3Test do
 		reader |> Polyvox.ID3.TagReader.close
 	end
 
+	test "can read version 2 tag" do
+		{:ok, reader} = System.cwd |> Path.join("test/test.v2") |> Polyvox.ID3.get_reader
+
+		%{v2: tag} = reader |> get_tag
+
+		assert(%{podcast: "World's Best Podcast!"} = tag)
+		assert(%{title: "World's Best First Podcast!"} = tag)
+		assert(%{number: 1} = tag)
+		assert(%{participants: ["Bryan", "Heather", "Curtis"]} = tag)
+		assert(%{year: 2013} = tag)
+		assert(%{description: "This first episode of the world's best podcast brought to you by the letter N."} = tag)
+		assert(%{show_notes: "<h1>WORLD'S BEST!</h1>"} = tag)
+		assert(%{genres: [101, "Podcast/Technology/Podcasting"]} = tag)
+		assert(%{number: 1} = tag)
+		assert(%{s: 0} = tag)
+		assert(%{e: 0} = tag)
+		
+		reader |> Polyvox.ID3.TagReader.close
+	end
+	
 	defp get_tag(reader), do: get_tag(reader, :notready)
 	defp get_tag(reader, :notready) do
 		tag = reader |> Polyvox.ID3.TagReader.tag
