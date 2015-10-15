@@ -14,8 +14,8 @@ information for ID3 tags.
 | Episode number      | 1                                                               |  X  |  TRCK      | `:number`       |
 | Participants        | Bryan, Heather, and Curtis                                      |  X  |  TPE1      | `:participants` |
 | Year recorded       | 2015                                                            |  X  |  TYER      | `:year`         |
-| Summary             | Our inaugural podcast                                           |  X  |            | `:summary`      |
-| Description         | In our inaugural podcast, we start with the underhandedness...  |     |  TIT3      | `:description`  |
+| Summary             | Our inaugural podcast                                           |  X  |  TIT3      | `:summary`      |
+| Description         | In our inaugural podcast, we start with the underhandedness...  |     |  COMM      | `:description`  |
 | Show notes          | What did we talk about? &lt;ul&gt;&lt;li&gt;The recent...       |     |  TXXX      | `:show_notes`   |
 | Genres              | Personal Journals                                               |  X  |  TCON      | `:genres`       |
 | Episode artwork     | Pretty picture :)                                               |     |  APIC      | `:artwork`      |
