@@ -1,4 +1,4 @@
-defmodule Polyvox.ID3.Supervisor do
+defmodule Polyvox.ID3.TagReaderSupervisor do
 	use Supervisor
 
 	@moduledoc """
