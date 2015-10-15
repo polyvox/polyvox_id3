@@ -35,6 +35,7 @@ defmodule Polyvox.ID3.TagReader do
 		case File.exists?(path) do
 			true ->
 				run_task(Polyvox.ID3.Readers.VersionOne, path)
+				run_task(Polyvox.ID3.Readers.VersionTwoThree, path)
 				{:ok, {:unparsed, %Polyvox.ID3.TagReader{}}}
 			_ ->
 				{:stop, :enoent}
@@ -45,8 +46,8 @@ defmodule Polyvox.ID3.TagReader do
 		{:reply, :notready, s}
 	end
 
-	def handle_call(:tag, _, {:parsed, tags} = s) do
-		{:reply, tags, s}
+	def handle_call(:tag, _, {:parsed, struct} = s) do
+		{:reply, struct, s}
 	end
 
 	def handle_cast(:close, state) do
@@ -54,15 +55,27 @@ defmodule Polyvox.ID3.TagReader do
 	end
 
 	def handle_info({:error, :v1, :einval}, {_, struct}) do
-		{:noreply, {:parsed, %Polyvox.ID3.TagReader{struct | v1: :notfound}}}
+		{:noreply, {:parsed, %__MODULE__{struct | v1: :notfound}}}
 	end
 
 	def handle_info({:error, :v1, reason}, state) do
 		{:stop, {:error, reason}, state}
 	end
 
+	def handle_info({:v1, tag}, {_, %{v2: nil} = struct}) do
+		{:noreply, {:unparsed, %__MODULE__{struct | v1: tag}}}
+	end
+	
 	def handle_info({:v1, tag}, {_, struct}) do
-		{:noreply, {:parsed, %Polyvox.ID3.TagReader{struct | v1: tag}}}
+		{:noreply, {:parsed, %__MODULE__{struct | v1: tag}}}
+	end
+	
+	def handle_info({:v2, tag}, {_, %{v1: nil} = struct}) do
+		{:noreply, {:unparsed, %__MODULE__{struct | v2: tag}}}
+	end
+	
+	def handle_info({:v2, tag}, {_, struct}) do
+		{:noreply, {:parsed, %__MODULE__{struct | v2: tag}}}
 	end
 	
 	defp run_task(module, path) do
