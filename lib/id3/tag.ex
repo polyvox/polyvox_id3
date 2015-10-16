@@ -1,2 +1,16 @@
 defprotocol Polyvox.ID3.Tag do
+	def podcast(tag)
+	def title(tag)
+	def number(tag)
+	def participants(tag)
+	def year(tag)
+	def summary(tag)
+	def description(tag)
+	def show_notes(tag)
+	def genres(tag)
+	def artwork(tag)
+	def date(tag)
+	def url(tag)
+	def podcast_url(tag)
+	def uid(tag)
 end

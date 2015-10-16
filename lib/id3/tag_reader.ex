@@ -81,4 +81,41 @@ defmodule Polyvox.ID3.TagReader do
 	defp run_task(module, path) do
 		Task.start(module, :parse, [%{path: path, caller: self}])
 	end
+
+	defimpl Polyvox.ID3.Tag do
+		def podcast(tag), do: tag |> get(:podcast)
+		
+		def title(tag), do: tag |> get(:title)
+		
+		def number(tag), do: tag |> get(:number)
+		
+		def participants(tag), do: tag |> get(:participants)
+		
+		def year(tag), do: tag |> get(:year)
+		
+		def summary(tag), do: tag |> get(:summary)
+		
+		def description(tag), do: tag |> get(:description)
+		
+		def show_notes(tag), do: tag |> get(:show_notes)
+		
+		def genres(tag), do: tag |> get(:genres)
+		
+		def artwork(tag), do: tag |> get(:artwork)
+		
+		def date(tag), do: tag |> get(:date)
+		
+		def url(tag), do: tag |> get(:url)
+		
+		def podcast_url(tag), do: tag |> get(:podcast_url)
+		
+		def uid(tag), do: tag |> get(:uid)
+
+		defp get(%{v2: v2, v1: v1}, atom) do
+			get_prop(v2, atom) || get_prop(v1, atom) || :notfound
+		end
+
+		defp get_prop(nil, _), do: nil
+		defp get_prop(map, atom), do: map |> Map.get(atom)
+	end
 end
