@@ -46,7 +46,7 @@ defmodule Polyvox.ID3Test do
 		assert(%{podcast_url: "http://awesome.audio"} = tag)
 		assert(%{podcast: "World's Best Podcast!"} = tag)
 		assert(%{summary: "Inaugural Awesome Podcast!"} = tag)
- 		assert(%{description: "The first episode of the world's best podcast brought to you by the letter N."} = tag)
+ 		assert(%{description: "The first episode of the world's \u{1F608} podcast brought to you by the letter N."} = tag)
 		assert(%{url: "http://awesome.audio/1"} = tag)
 		assert(%{genres: "Speech"} = tag)
 		assert(%{year: 2013} = tag)

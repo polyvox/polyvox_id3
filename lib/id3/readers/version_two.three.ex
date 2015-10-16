@@ -5,10 +5,10 @@ defmodule Polyvox.ID3.Readers.VersionTwoThree do
 		File.open(path) |> parse_or_error(caller)
 	end
 
-	defp parse_or_error({:ok, device}, caller), do: device |> do_parse |> send_to(caller) |> File.close
+	defp parse_or_error({:ok, device}, caller), do: device |> parse_tag |> send_to(caller) |> File.close
 	defp parse_or_error(e, caller), do: e |> inform_error(caller)
 
-	defp do_parse(device) do
+	defp parse_tag(device) do
 		{:ok, pos} = :file.position(device, :cur)
 		acc = %__MODULE__{version: 2.3, s: pos}
 
@@ -39,115 +39,115 @@ defmodule Polyvox.ID3.Readers.VersionTwoThree do
 			{:ok, pos} when pos < s + size ->
 				device
 				|> IO.binread(4)
-				|> parse_frames(device, acc)
+				|> parse_frame(device, acc)
 			_ -> {device, acc}
 		end
 	end
 
-	defp parse_frames("TPE1", device, acc) do
+	defp parse_frame("TPE1", device, acc) do
 		device
 		|> get_text
 		|> String.split("/")
-		|> merge(:participants, device, acc)
+		|> accumulate(:participants, device, acc)
 		|> parse_frames
 	end
 
-	defp parse_frames("TXXX", device, acc) do
+	defp parse_frame("TXXX", device, acc) do
 		device
 		|> get_text
 		|> String.split("\0")
 		|> List.last
-		|> merge(:show_notes, device, acc)
+		|> accumulate(:show_notes, device, acc)
 		|> parse_frames
 	end
 
-	defp parse_frames("WOAS", device, acc) do
+	defp parse_frame("WOAS", device, acc) do
 		device
 		|> get_text
-		|> merge(:podcast_url, device, acc)
+		|> accumulate(:podcast_url, device, acc)
 		|> parse_frames
 	end
 
-	defp parse_frames("TCON", device, acc) do
+	defp parse_frame("TCON", device, acc) do
 		device
 		|> get_text
-		|> merge(:genres, device, acc)
+		|> accumulate(:genres, device, acc)
 		|> parse_frames
 	end
 
-	defp parse_frames("TYER", device, acc) do
+	defp parse_frame("TYER", device, acc) do
 		device
 		|> get_text
 		|> String.to_integer
-		|> merge(:year, device, acc)
+		|> accumulate(:year, device, acc)
 		|> parse_frames
 	end
 
-	defp parse_frames("TRCK", device, acc) do
+	defp parse_frame("TRCK", device, acc) do
 		device
 		|> get_text
 		|> String.to_integer
-		|> merge(:number, device, acc)
+		|> accumulate(:number, device, acc)
 		|> parse_frames
 	end
 
-	defp parse_frames("WOAF", device, acc) do
+	defp parse_frame("WOAF", device, acc) do
 		device
 		|> get_text
-		|> merge(:url, device, acc)
+		|> accumulate(:url, device, acc)
 		|> parse_frames
 	end		 
 
-	defp parse_frames("TIT2", device, acc) do
+	defp parse_frame("TIT2", device, acc) do
 		device
 		|> get_text
-		|> merge(:title, device, acc)
+		|> accumulate(:title, device, acc)
 		|> parse_frames
 	end		 
 
-	defp parse_frames("TIT3", device, acc) do
+	defp parse_frame("TIT3", device, acc) do
 		device
 		|> get_text
-		|> merge(:summary, device, acc)
+		|> accumulate(:summary, device, acc)
 		|> parse_frames
 	end		 
 
-	defp parse_frames("TDAT", device, acc) do
+	defp parse_frame("TDAT", device, acc) do
 		device
 		|> get_text
-		|> merge(:date, device, acc)
+		|> accumulate(:date, device, acc)
 		|> parse_frames
 	end		 
 
-	defp parse_frames("TALB", device, acc) do
+	defp parse_frame("TALB", device, acc) do
 		device
 		|> get_text
-		|> merge(:podcast, device, acc)
+		|> accumulate(:podcast, device, acc)
 		|> parse_frames
 	end		 
 
-	defp parse_frames("COMM", device, acc) do
+	defp parse_frame("COMM", device, acc) do
 		device
 		|> get_text
 		|> ignore(4)
 		|> String.split("\0")
 		|> List.last
-		|> merge(:description, device, acc)
+		|> accumulate(:description, device, acc)
 		|> parse_frames
 	end
 
-	defp parse_frames("UFID", device, acc) do
+	defp parse_frame("UFID", device, acc) do
 		device
 		|> get_text
 		|> String.split("\0")
 		|> List.last
-		|> merge(:uid, device, acc)
+		|> accumulate(:uid, device, acc)
 		|> parse_frames
 	end
 
-	defp parse_frames(_, device, acc) do
+	defp parse_frame(_, device, acc) do
 		device
-		|> skip_tag(acc)
+		|> skip_frame(acc)
 		|> parse_frames
 	end
 
@@ -156,13 +156,13 @@ defmodule Polyvox.ID3.Readers.VersionTwoThree do
 		|> String.slice(n, String.length(s))
 	end
 
-	defp skip_tag(device, acc) do
+	defp skip_frame(device, acc) do
 		<< size :: integer-size(32) >> = IO.binread(device, 4)
 		IO.binread(device, 2 + size) # Throw away flags
 		{device, acc}
 	end
 
-	defp merge(value, key, device, acc) do
+	defp accumulate(value, key, device, acc) do
 		{device, Map.put(acc, key, value)}
 	end
 
@@ -173,13 +173,8 @@ defmodule Polyvox.ID3.Readers.VersionTwoThree do
 
 		device
 		|> IO.binread(size - 1)
-		|> decode(encoding)
 	end
-
-	defp decode(string, 0) do
-		string
-	end
-
+ 
 	defp unsync(value) do
 		integer_size = bit_size(value)
 		<< i :: integer-size(integer_size) >> = do_unsync(value)
