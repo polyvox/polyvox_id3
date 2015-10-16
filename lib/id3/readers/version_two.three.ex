@@ -1,4 +1,6 @@
 defmodule Polyvox.ID3.Readers.VersionTwoThree do
+	@moduledoc false
+	
 	defstruct [:podcast, :title, :number, :participants, :year, :description, :show_notes, :genres, :artwork, :date, :url, :podcast_url, :uid, :s, :version, :size, :synced, :ext, :exp]
 
 	def parse(%{path: path, caller: caller}) do
@@ -181,7 +183,7 @@ defmodule Polyvox.ID3.Readers.VersionTwoThree do
 		i
 	end
 
-	defp do_unsync(<< 0 :: size(1), x :: size(7), rest :: binary >>) do
+	defp do_unsync(<< 0 :: size(1), x :: size(7) >> <> rest) do
 		remaining_size = 7 * byte_size(rest)
 		padding_size = byte_size(rest) + 1
 		<< 0 :: size(padding_size), x :: size(7), unsync(rest) :: size(remaining_size) >>

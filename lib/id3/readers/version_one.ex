@@ -1,4 +1,6 @@
 defmodule Polyvox.ID3.Readers.VersionOne do
+	@moduledoc false
+	
 	defstruct [:title, :participants, :podcast, :year, :summary, :number, :genres, :s, :e, :size]
 
 	def parse(%{path: path, caller: caller}) do
