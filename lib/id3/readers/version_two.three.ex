@@ -1,5 +1,5 @@
 defmodule Polyvox.ID3.Readers.VersionTwoThree do
-	defstruct [:podcast, :title, :number, :participants, :year, :description, :show_notes, :genres, :artwork, :date, :url, :podcast_url, :uid, :s, :version, :size, :synced]
+	defstruct [:podcast, :title, :number, :participants, :year, :description, :show_notes, :genres, :artwork, :date, :url, :podcast_url, :uid, :s, :version, :size, :synced, :ext, :exp]
 
 	def parse(%{path: path, caller: caller}) do
 		File.open(path) |> parse_or_error(caller)
@@ -23,7 +23,7 @@ defmodule Polyvox.ID3.Readers.VersionTwoThree do
 	end
 
 	defp parse_header({device, acc}, << ?I, ?D, ?3, 3, 0, sync :: size(1), ext :: size(1), exp :: size(1), 0 :: size(5),  size :: binary-size(4) >>) do
-		{device, %__MODULE__{acc | size: unsync(size) + 10, synced: sync == 1}}
+		{device, %__MODULE__{acc | size: unsync(size) + 10, synced: sync == 1, ext: ext == 1, exp: exp == 1}}
 	end
 
 	defp parse_header({device, _}, _) do
@@ -145,7 +145,7 @@ defmodule Polyvox.ID3.Readers.VersionTwoThree do
 		|> parse_frames
 	end
 
-	defp parse_frames(unknown, device, acc) do
+	defp parse_frames(_, device, acc) do
 		device
 		|> skip_tag(acc)
 		|> parse_frames

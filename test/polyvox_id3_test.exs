@@ -40,6 +40,8 @@ defmodule Polyvox.ID3Test do
 
 		assert(%{s: 0} = tag)
 		assert(%{size: 469} = tag)
+		assert(%{exp: false} = tag)
+		assert(%{ext: false} = tag)
 		assert(%{participants: ["Bryan", "Heather", "Curtis"]} = tag)
 		assert(%{podcast_url: "http://awesome.audio"} = tag)
 		assert(%{podcast: "World's Best Podcast!"} = tag)
