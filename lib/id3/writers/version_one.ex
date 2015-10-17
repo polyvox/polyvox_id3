@@ -59,7 +59,7 @@ defmodule Polyvox.ID3.Writers.VersionOne do
 		text <> String.duplicate("\0", pad_length)
 	end
 
-	defp pad_if_short(text, length) do
+	defp pad_if_short(text, _) do
 		text
 	end
 end

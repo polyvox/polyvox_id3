@@ -171,7 +171,7 @@ defmodule Polyvox.ID3.Readers.VersionTwoThree do
 	defp get_text(device) do
 		<< size :: integer-size(32) >> = IO.binread(device, 4)
 		IO.binread(device, 2) # Throw away flags
-		<< encoding :: integer >> = IO.binread(device, 1)
+		IO.binread(device, 1) # Throw away encoding
 
 		device
 		|> IO.binread(size - 1)
