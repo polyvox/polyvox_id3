@@ -4,7 +4,7 @@ defmodule Polyvox.ID3 do
   # See http://elixir-lang.org/docs/stable/elixir/Application.html
   # for more information on OTP Applications
   def start(_, _) do
-		Polyvox.ID3.TagReaderSupervisor.start_link
+		Polyvox.ID3.TagInteractionSupervisor.start_link
   end
 
 	@doc """
@@ -16,7 +16,12 @@ defmodule Polyvox.ID3 do
 		Polyvox.ID3.TagReaderSupervisor.get_reader(path)
 	end
 
-	def get_writer do
-		Polyvox.ID3.TagWriterSupervisor.get_writer
+	@doc """
+	Gets the pid of the `TagWriter` to create a stream that
+	prepends and appends ID3 tags to another stream.
+	"""
+	@spec get_writer(Stream.t) :: {:ok, pid} | {:error, term}
+	def get_writer(stream) do
+		Polyvox.ID3.TagWriterSupervisor.get_writer(stream)
 	end
 end

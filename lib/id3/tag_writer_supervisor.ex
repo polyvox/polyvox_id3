@@ -2,7 +2,7 @@ defmodule Polyvox.ID3.TagWriterSupervisor do
 	use Supervisor
 
 	@moduledoc """
-	A supervisor that creates `TagWriter`s.
+	A supervisor that creates and supervises `TagWriter`s.
 	"""
 
 	@doc """
@@ -24,7 +24,7 @@ defmodule Polyvox.ID3.TagWriterSupervisor do
 	Gets the pid of a `TagWriter` to write the ID3 tags added
 	to the writer.
 	"""
-	@spec get_writer(Stream.t) :: {:ok, pid}
+	@spec get_writer(Stream.t) :: {:ok, pid} | {:error, term}
 	def get_writer(stream) do
 		case Supervisor.start_child(__MODULE__, [stream]) do
 			{:error, {:bad_return_value, {:error, e}}} -> {:error, e}
