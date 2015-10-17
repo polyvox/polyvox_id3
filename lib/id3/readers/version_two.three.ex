@@ -1,7 +1,7 @@
 defmodule Polyvox.ID3.Readers.VersionTwoThree do
 	@moduledoc false
 	
-	defstruct [:podcast, :title, :number, :participants, :year, :description, :show_notes, :genres, :artwork, :date, :url, :podcast_url, :uid, :s, :version, :size, :synced, :ext, :exp]
+	defstruct [:podcast, :summary, :title, :number, :participants, :year, :description, :show_notes, :genres, :artwork, :date, :url, :podcast_url, :uid, :s, :version, :size, :synced, :ext, :exp]
 
 	def parse(%{path: path, caller: caller}) do
 		File.open(path) |> parse_or_error(caller)

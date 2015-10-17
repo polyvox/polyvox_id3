@@ -1,10 +1,14 @@
 defmodule Polyvox.ID3.TagWriter do
 	use GenServer
 	
-	defstruct [:file_stream, :podcast, :title, :number, :participants, :year, :description, :show_notes, :genres, :artwork, :date, :url, :podcast_url]
+	defstruct [:file_stream, :summary, :podcast, :title, :number, :participants, :year, :description, :show_notes, :genres, :artwork, :date, :url, :podcast_url]
 
 	def set(pid, atom, value) do
 		GenServer.call(pid, {:set, atom, value})
+	end
+
+	def summary(pid, value) when is_binary(value) do
+		set(pid, :summary, value)
 	end
 	
 	def podcast(pid, value) when is_binary(value) do

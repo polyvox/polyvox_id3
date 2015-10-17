@@ -1,4 +1,4 @@
-defmodule Polyvox.Writer.Test do
+defmodule Polyvox.Writer.VersionOne.Test do
   use ExUnit.Case
 	alias Polyvox.ID3.TagWriter
 
@@ -15,7 +15,17 @@ defmodule Polyvox.Writer.Test do
 
 		output = writer |> TagWriter.stream |> Enum.take(expected_length) |> to_string
 
-		<< _ :: binary-size(length), ?T, ?A, ?G >> <> rest = output
+		<< _ :: binary-size(length) >> <> rest = output
+		"TAG" <> rest = rest
+		<< 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 >> <> rest = rest
+		<< 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 >> <> rest = rest
+		<< 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 >> <> rest = rest
+		"0000" <> rest = rest
+		<< 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 >> <> rest = rest
+		<< 0 >> <> rest = rest
+		<< 0 >> <> rest = rest
+		<< 101 >> = rest
+		
 		TagWriter.close(writer)
 	end
 
@@ -29,8 +39,9 @@ defmodule Polyvox.Writer.Test do
 		|> TagWriter.podcast("polyvox")
 		|> TagWriter.title("test podcast")
 		|> TagWriter.number(4)
-		|> TagWriter.participants(["Byran", "Heather", "Curtis"])
+		|> TagWriter.participants(["Bryan", "Heather", "Curtis"])
 		|> TagWriter.year(2013)
+		|> TagWriter.summary("This is really really really great.")
 		|> TagWriter.description("This is really really really really really great.")
 		|> TagWriter.show_notes("Here are some show notes that you can read while making bodily waste.")
 		|> TagWriter.genres([101])
@@ -41,7 +52,17 @@ defmodule Polyvox.Writer.Test do
 		|> Enum.take(expected_length)
 		|> to_string
 
-		<< _ :: binary-size(length), ?T, ?A, ?G >> <> rest = output
+		<< _ :: binary-size(length) >> <> rest = output
+		"TAG" <> rest = rest
+		"test podcast" <> << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 >> <> rest = rest
+		"Bryan, Heather, Curtis" <> << 0, 0, 0, 0, 0, 0, 0, 0 >> <> rest = rest
+		"polyvox" <> << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 >> <> rest = rest
+		"2013" <> rest = rest
+		"This is really really really" <> rest = rest
+		<< 0 >> <> rest = rest
+		<< 4 >> <> rest = rest
+		<< 101 >> = rest
+
 		TagWriter.close(writer)
 	end
 

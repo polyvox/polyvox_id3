@@ -4,7 +4,7 @@ defmodule Polyvox.ID3.Writers.VersionOne do
 		 do_text_stream(Map.get(state, :title), 30),
 		 do_text_stream(Map.get(state, :participants), 30),
 		 do_text_stream(Map.get(state, :podcast), 30),
-		 do_text_stream(Map.get(state, :year) || 0, 4),
+		 do_year_stream(Map.get(state, :year)),
 		 do_text_stream(Map.get(state, :summary), 28),
 		 do_int_stream(0),
 		 do_int_stream(Map.get(state, :number)),
@@ -24,11 +24,18 @@ defmodule Polyvox.ID3.Writers.VersionOne do
 	end
 
 	defp do_text_stream(list, truncate) when is_list(list) do
-		do_text_stream(Stream.join(list, ", "), truncate)
+		do_text_stream(Enum.join(list, ", "), truncate)
 	end
 
 	defp do_text_stream(value, truncate) do
 		do_text_stream(to_string(value), truncate)
+	end
+
+	defp do_year_stream(value) do
+		(value || 0)
+		|> to_string
+		|> String.rjust(4, ?0)
+		|> do_text_stream(4)
 	end
 
 	defp do_int_stream(nil) do
