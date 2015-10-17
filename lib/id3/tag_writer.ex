@@ -99,7 +99,7 @@ defmodule Polyvox.ID3.TagWriter do
 		end
 		streams = [state.file_stream | streams]
 		if opts[:v2] do
-			streams = [Polyvox.ID3.Writers.VersionTwoThree.stream(state)]
+			streams = [Polyvox.ID3.Writers.VersionTwoThree.stream(state) | streams]
 		end
 		
 		streams |> Stream.concat
