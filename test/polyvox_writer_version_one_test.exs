@@ -2,20 +2,21 @@ defmodule Polyvox.Writer.VersionOne.Test do
   use ExUnit.Case
 	alias Polyvox.ID3.TagWriter
 
+	@content "Fake-o MP3"
+
 	setup do
-		content = "Fake-o MP3"
-		s = Stream.unfold(content, &make_stream/1)
-		{:ok, stream: s, length: byte_size(content)}
+		s = Stream.unfold(@content, &make_stream/1)
+		{:ok, stream: s}
 	end
 
 	test "version 1 writer with no values emits 125 0 bytes", meta do
 		{:ok, writer} = TagWriter.start_link(meta[:stream])
-		length = meta[:length]
-		expected_length = 128 + meta[:length]
+		length = byte_size(@content)
+		expected_length = 128 + length
 
 		output = writer |> TagWriter.stream |> Enum.take(expected_length) |> to_string
 
-		<< _ :: binary-size(length) >> <> rest = output
+		@content <> rest = output
 		"TAG" <> rest = rest
 		<< 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 >> <> rest = rest
 		<< 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 >> <> rest = rest
@@ -31,8 +32,8 @@ defmodule Polyvox.Writer.VersionOne.Test do
 
 	test "version 1 writer with normal values emits", meta do
 		{:ok, writer} = TagWriter.start_link(meta[:stream])
-		length = meta[:length]
-		expected_length = 128 + meta[:length]
+		length = byte_size(@content)
+		expected_length = 128 + length
 
 		output =
 			writer
@@ -49,10 +50,10 @@ defmodule Polyvox.Writer.VersionOne.Test do
 		|> TagWriter.url("http://polyvox.audio")
 		|> TagWriter.podcast_url("http://polyvox.audio/1")
 		|> TagWriter.stream
-		|> Enum.take(expected_length)
+		|> Enum.take(expected_length + 1)
 		|> to_string
 
-		<< _ :: binary-size(length) >> <> rest = output
+		@content <> rest = output
 		"TAG" <> rest = rest
 		"test podcast" <> << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 >> <> rest = rest
 		"Bryan, Heather, Curtis" <> << 0, 0, 0, 0, 0, 0, 0, 0 >> <> rest = rest
@@ -62,7 +63,7 @@ defmodule Polyvox.Writer.VersionOne.Test do
 		<< 0 >> <> rest = rest
 		<< 4 >> <> rest = rest
 		<< 101 >> = rest
-
+		
 		TagWriter.close(writer)
 	end
 
