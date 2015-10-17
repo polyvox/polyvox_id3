@@ -14,7 +14,7 @@ defmodule Polyvox.Writer.VersionOne.Test do
 		length = byte_size(@content)
 		expected_length = 128 + length
 
-		output = writer |> TagWriter.stream |> Enum.take(expected_length) |> to_string
+		output = writer |> TagWriter.stream(v1: true) |> Enum.take(expected_length) |> to_string
 
 		@content <> rest = output
 		"TAG" <> rest = rest
@@ -49,7 +49,7 @@ defmodule Polyvox.Writer.VersionOne.Test do
 		|> TagWriter.date("2801")
 		|> TagWriter.url("http://polyvox.audio")
 		|> TagWriter.podcast_url("http://polyvox.audio/1")
-		|> TagWriter.stream
+		|> TagWriter.stream(v1: true)
 		|> Enum.take(expected_length + 1)
 		|> to_string
 

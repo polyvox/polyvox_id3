@@ -47,7 +47,7 @@ defmodule Polyvox.ID3.Writers.VersionOne do
 	end
 
 	defp make_stream(<< x >> <> rest) do
-		{x, rest}
+		{<< x >>, rest}
 	end
 
 	defp make_stream("") do

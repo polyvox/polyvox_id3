@@ -1,7 +1,7 @@
 defmodule Polyvox.ID3.TagWriter do
 	use GenServer
 	
-	defstruct [:file_stream, :summary, :podcast, :title, :number, :participants, :year, :description, :show_notes, :genres, :artwork, :date, :url, :podcast_url]
+	defstruct [:file_stream, :summary, :podcast, :title, :number, :participants, :year, :description, :show_notes, :genres, :artwork, :date, :url, :podcast_url, :uid]
 
 	def set(pid, atom, value) do
 		GenServer.call(pid, {:set, atom, value})
@@ -59,8 +59,12 @@ defmodule Polyvox.ID3.TagWriter do
 		set(pid, :podcast_url, value)
 	end
 
-	def stream(pid) do
-		GenServer.call(pid, :stream)
+	def uid(pid, value) when is_binary(value) do
+		set(pid, :uid, value)
+	end
+
+	def stream(pid, opts \\ [v1: true, v2: true]) do
+		GenServer.call(pid, {:stream, opts})
 	end
 
 	def close(pid) do
@@ -79,18 +83,25 @@ defmodule Polyvox.ID3.TagWriter do
 		{:reply, self, Map.put(state, atom, value)}
 	end
 
-	def handle_call(:stream, _, state) do
-		{:reply, stream_for_tags(state), state}
+	def handle_call({:stream, opts}, _, state) do
+		opts = opts || []
+		{:reply, stream_for_tags(state, opts), state}
 	end
 
 	def handle_cast(:close, state) do
 		{:stop, :normal, state}
 	end
 
-	defp stream_for_tags(state) do
-		[#Polyvox.ID3.Writers.VersionTwoThree.stream(state),
-		 state.file_stream,
-		 Polyvox.ID3.Writers.VersionOne.stream(state)]
-		|> Stream.concat
+	defp stream_for_tags(state, opts) do
+		streams = []
+		if opts[:v1] do
+			streams = [Polyvox.ID3.Writers.VersionOne.stream(state)]
+		end
+		streams = [state.file_stream | streams]
+		if opts[:v2] do
+			streams = [Polyvox.ID3.Writers.VersionTwoThree.stream(state)]
+		end
+		
+		streams |> Stream.concat
 	end
 end
