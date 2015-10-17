@@ -59,6 +59,10 @@ defmodule Polyvox.ID3.TagWriter do
 		GenServer.call(pid, :stream)
 	end
 
+	def close(pid) do
+		GenServer.cast(pid, :close)
+	end
+
 	def start_link(stream) do
 		GenServer.start_link(__MODULE__, stream)
 	end
@@ -73,6 +77,10 @@ defmodule Polyvox.ID3.TagWriter do
 
 	def handle_call(:stream, _, state) do
 		{:reply, stream_for_tags(state), state}
+	end
+
+	def handle_cast(:close, state) do
+		{:stop, :normal, state}
 	end
 
 	defp stream_for_tags(state) do

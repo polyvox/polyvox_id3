@@ -1,6 +1,5 @@
-defmodule Polyvox.ID3Test do
+defmodule Polyvox.Reader.Test do
   use ExUnit.Case
-  doctest Polyvox.ID3
 
 	test "fails on unknown file" do
 		{:error, :enoent} = System.cwd |> Path.join("test/does/not/exist") |> Polyvox.ID3.get_reader
