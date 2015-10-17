@@ -15,4 +15,8 @@ defmodule Polyvox.ID3 do
 	def get_reader(path) do
 		Polyvox.ID3.TagReaderSupervisor.get_reader(path)
 	end
+
+	def get_writer do
+		Polyvox.ID3.TagWriterSupervisor.get_writer
+	end
 end
