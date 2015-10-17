@@ -50,7 +50,7 @@ defmodule Polyvox.ID3.Writers.VersionTwoThree.Test do
 		### ID3 Tag Header
 		assert("ID3" <> rest = output)                  # Header preamble
 		assert(<< 3, 0, 0 >> <> rest = rest)            # Version and flags
-		<< size :: integer-size(32) >> <> rest = rest   # Size
+		<< 2862 :: integer-size(32) >> <> rest = rest   # Size
 
 		### ID3 Frames
 		rest
@@ -63,10 +63,34 @@ defmodule Polyvox.ID3.Writers.VersionTwoThree.Test do
 		|> assert_text("TIT3", "Our inaugural podcast")
 		|> assert_text("COMM", "\0\0\0\0In our inaugural podcast, we start with the underhandedness of SourceForge and conclude with vending machines in public restrooms.")
 		|> assert_text("TXXX", "Show Notes\0What did we talk about?<ul><li>The recent underhandedness of SourceForge.net and how it relates to Pulp Fiction</li>\n<li>Bryan's new Apple Watch</li>\n<li>Starbuck's, banks, Amazon, and all of the other Big Brothers</li>\n<li>Blackpowder, gunpowder and shooting stuff</li>\n<li>Bryan's upcoming birthday</li>\n<li>Keanu Reeves and Shia LeBouf</li>\n<li>Using smartphones for their smart and not their phone</li>\n<li>Long-format writing</li>\n<li>Gonzo journalism</li>\n<li>Our first vinyl records, cassette tapes, and CDs</li>\n<li>\n<a href=\"http://www.youtube.com/watch?v=2pv4xmZF_EI\">Underdog</a></li>\n<li>The mysteries of mattresses and pillows</li>\n<li>Vending machines in public restrooms</li>\n<li>The <a href=\"https://en.wikipedia.org/wiki/Half_cent_(United_States_coin)\">Ha' penny</a></ul><p>And, a listener submitted photo!</p><p><img src=\"http://podcasts.polyvox.audio/media/0001/peccadillo.jpg\" class=\"poly-img\"></p>")
+		|> assert_text("TCON", "(101)")
+		|> assert_text("TDAT", "1706")
+		|> assert_url("WOAF", "http://polyvox.audio/podcasts/1.html")
+		|> assert_url("WOAS", "http://polyvox.audio")
+		|> assert_id("2CA119D7-1A5D-4CBE-BE5D-06A001B53B52")
 		|> Kernel.===("")
 		|> assert("Not what we wanted...")
 
 		TagWriter.close(writer)
+	end
+
+	defp assert_id(rest, value) do
+		value_size = byte_size(value) + String.length("http://polyvox.audio/guids\0")
+
+		<< k :: binary-size(4) >>  <> rest = rest
+		<< size :: integer-size(32) >> <> rest = rest
+		<< flags :: integer-size(16) >> <> rest = rest
+		v = binary_part(rest, 0, value_size)
+		rest = binary_part(rest, value_size, byte_size(rest) - value_size)
+		[owner, id] = String.split(v, "\0")
+		
+		assert(k == "UFID")
+		assert(size == value_size)
+		assert(flags == 0)
+		assert(owner == "http://polyvox.audio/guids")
+		assert(id == value)
+		
+		rest
 	end
 
 	defp assert_text(rest, key, value) do
@@ -83,6 +107,23 @@ defmodule Polyvox.ID3.Writers.VersionTwoThree.Test do
 		assert(size == byte_size(value) + 1)
 		assert(flags == 0)
 		assert(encoding == 1)
+		assert(v == value)
+		
+		rest
+	end
+
+	defp assert_url(rest, key, value) do
+		value_size = byte_size(value)
+
+		<< k :: binary-size(4) >>  <> rest = rest
+		<< size :: integer-size(32) >> <> rest = rest
+		<< flags :: integer-size(16) >> <> rest = rest
+		v = binary_part(rest, 0, value_size)
+		rest = binary_part(rest, value_size, byte_size(rest) - value_size)
+		
+		assert(k == key)
+		assert(size == byte_size(value))
+		assert(flags == 0)
 		assert(v == value)
 		
 		rest

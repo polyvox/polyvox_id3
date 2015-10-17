@@ -22,6 +22,11 @@ defmodule Polyvox.ID3.Writers.VersionTwoThree do
 		|> text_frame("TIT3", Map.get(state, :summary))
 		|> comments_frame(Map.get(state, :description))
 		|> text_frame("TXXX", "Show Notes", Map.get(state, :show_notes))
+		|> list_frame("TCON", "(", ")", Map.get(state, :genres))
+		|> text_frame("TDAT", Map.get(state, :date))
+		|> url_frame("WOAF", Map.get(state, :url))
+		|> url_frame("WOAS", Map.get(state, :podcast_url))
+		|> id_frame(Map.get(state, :uid))
 	end
 
 	defp comments_frame(acc, nil), do: acc
@@ -29,9 +34,21 @@ defmodule Polyvox.ID3.Writers.VersionTwoThree do
 		acc <> "COMM" <> << (byte_size(value) + 5) :: integer-size(32), 0, 0, 1, 0, 0, 0, 0 >> <> value
 	end
 
+	defp id_frame(acc, nil), do: acc
+	defp id_frame(acc, value) do
+		value = "http://polyvox.audio/guids\0" <> value
+		acc <> "UFID" <> << byte_size(value) :: integer-size(32), 0, 0 >> <> value
+	end
+
 	defp list_frame(acc, key, _, nil), do: acc |> text_frame(key, nil)
 	defp list_frame(acc, key, delim, value) do
 		acc |> text_frame(key, Enum.join(value, delim))
+	end
+
+	defp list_frame(acc, _, _, _, nil), do: acc
+	defp list_frame(acc, key, prefix, suffix, value) do
+		value = prefix <> Enum.join(value, suffix <> prefix) <> suffix
+		acc |> text_frame(key, value)
 	end
 
 	defp text_frame(acc, _, _, nil), do: acc
@@ -40,12 +57,17 @@ defmodule Polyvox.ID3.Writers.VersionTwoThree do
 	end
 
 	defp text_frame(acc, _, nil), do: acc
-		defp text_frame(acc, key, value) when is_binary(value) do
+	defp text_frame(acc, key, value) when is_binary(value) do
 		acc <> key <> << (byte_size(value) + 1) :: integer-size(32), 0, 0, 1 >> <> value
 	end
 
 	defp text_frame(acc, key, value) do
 		acc |> text_frame(key, to_string(value))
+	end
+
+	defp url_frame(acc, _, nil), do: acc
+	defp url_frame(acc, key, value) do
+		acc <> key <> << byte_size(value) :: integer-size(32), 0, 0 >> <> value
 	end
 
 	defp to_stream(text) do
@@ -62,6 +84,10 @@ defmodule Polyvox.ID3.Writers.VersionTwoThree do
 
 	defp sync(i) do
 		use Bitwise
-		i
+		l4 = i &&& 0x7F
+		l3 = ((i <<< 1) &&& 0x7F00)
+		l2 = ((i <<< 2) &&& 0x7F0000)
+		l1 = ((i <<< 3) &&& 0x7F000000)
+		l1 + l2 + l3 + l4
 	end
 end
