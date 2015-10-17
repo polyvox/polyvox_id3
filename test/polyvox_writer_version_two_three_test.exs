@@ -11,7 +11,7 @@ defmodule Polyvox.ID3.Writers.VersionTwoThree.Test do
 
 	test "Empty version 2.3 tags has only polyvox.audio frame", meta do
 		{:ok, writer} = TagWriter.start_link(meta[:stream])
-		output = writer |> TagWriter.stream |> Enum.take(256_000_000) |> Enum.join("")
+		output = writer |> TagWriter.stream(v2: true) |> Enum.take(256_000_000) |> Enum.join("")
 
 		### ID3 Tag Header
 		assert("ID3" <> rest = output)                        # Header preamble
@@ -20,8 +20,8 @@ defmodule Polyvox.ID3.Writers.VersionTwoThree.Test do
 
 		rest
 		|> assert_text("TXXX", "Podcast platform of choice\0polyvox.audio")
-		|> Kernel.===("")
-		|> assert("Not what we wanted...")
+		|> assert_mp3
+		|> assert_empty
 		
 		TagWriter.close(writer)
 	end
@@ -43,7 +43,7 @@ defmodule Polyvox.ID3.Writers.VersionTwoThree.Test do
 		|> TagWriter.url("http://polyvox.audio/podcasts/1.html")
 		|> TagWriter.podcast_url("http://polyvox.audio")
 		|> TagWriter.uid("2CA119D7-1A5D-4CBE-BE5D-06A001B53B52")
-		|> TagWriter.stream
+		|> TagWriter.stream(v2: true)
 		|> Enum.take(256_000_000)
 		|> Enum.join("")
 
@@ -68,10 +68,14 @@ defmodule Polyvox.ID3.Writers.VersionTwoThree.Test do
 		|> assert_url("WOAF", "http://polyvox.audio/podcasts/1.html")
 		|> assert_url("WOAS", "http://polyvox.audio")
 		|> assert_id("2CA119D7-1A5D-4CBE-BE5D-06A001B53B52")
-		|> Kernel.===("")
-		|> assert("Not what we wanted...")
+		|> assert_mp3
+		|> assert_empty
 
 		TagWriter.close(writer)
+	end
+
+	defp assert_empty(rest) do
+		assert(rest == "")
 	end
 
 	defp assert_id(rest, value) do
@@ -90,6 +94,11 @@ defmodule Polyvox.ID3.Writers.VersionTwoThree.Test do
 		assert(owner == "http://polyvox.audio/guids")
 		assert(id == value)
 		
+		rest
+	end
+
+	defp assert_mp3(rest) do
+		<< @content >> <> rest = rest
 		rest
 	end
 
@@ -130,7 +139,7 @@ defmodule Polyvox.ID3.Writers.VersionTwoThree.Test do
 	end
 
 	defp make_stream(<< x >> <> rest) do
-		{x, rest}
+		{<< x >>, rest}
 	end
 
 	defp make_stream("") do
