@@ -37,7 +37,11 @@ defprotocol Polyvox.ID3.Tag do
 	@spec genres(Tag.t) :: list(integer) | nil
 	def genres(tag)
 
-	@doc "Gets a stream that contains the artwork for the episode."
+	@doc """
+  Gets a stream that contains the artwork for the episode.
+
+  __Note: This is not yet implemented because it's not MVP.__
+  """
 	@spec artwork(Tag.t) :: Stream.t | nil
 	def artwork(tag)
 

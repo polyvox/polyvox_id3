@@ -93,10 +93,14 @@ defmodule Polyvox.ID3.TagWriter do
 		set(pid, :genres, value)
 	end
 
-	@doc "Sets the embedded artwork for the episode."
+	@doc """
+  Sets the embedded artwork for the episode.
+
+  __Note: This is not yet implemented because it's not MVP.__
+  """
 	@spec artwork(pid, Stream.t) :: pid
 	def artwork(pid, value) do
-		set(pid, :artwork, value)
+		pid
 	end
 
 	@doc "Sets the date or the recording (in expected DDMM) format for the episode."
