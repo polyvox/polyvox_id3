@@ -11,7 +11,7 @@ defmodule Polyvox.ID3.Writers.VersionTwoThree.Test do
 
 	test "Empty version 2.3 tags has only polyvox.audio frame", meta do
 		{:ok, writer} = TagWriter.start_link(meta[:stream])
-		output = writer |> TagWriter.stream(v2: true) |> Enum.take(256_000_000) |> Enum.join("")
+		output = writer |> TagWriter.stream(v2_3: true) |> Enum.take(256_000_000) |> Enum.join("")
 
 		### ID3 Tag Header
 		assert("ID3" <> rest = output)                        # Header preamble
@@ -46,7 +46,7 @@ defmodule Polyvox.ID3.Writers.VersionTwoThree.Test do
 		|> TagWriter.url("http://polyvox.audio/podcasts/1.html")
 		|> TagWriter.podcast_url("http://polyvox.audio")
 		|> TagWriter.uid("2CA119D7-1A5D-4CBE-BE5D-06A001B53B52")
-		|> TagWriter.stream(v2: true)
+		|> TagWriter.stream(v2_3: true)
 		|> Enum.take(256_000_000)
 		|> Enum.join("")
 

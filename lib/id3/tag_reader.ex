@@ -1,11 +1,15 @@
 defmodule Polyvox.ID3.TagReader do
+	@moduledoc """
+	Reads ID3 tags from a file.
+
+  You should get a reference to a tag reader through the
+  [`Polyvox.ID3.get_reader`](./Polyvox.ID3.html#get_reader/1)
+  method.
+	"""
+
 	use GenServer
 
 	defstruct [:v1, :v2]
-
-	@moduledoc """
-	Reads ID3 tags from a file.
-	"""
 
 	@doc """
 	Starts a tag reader for the file at the specified path.
@@ -16,9 +20,25 @@ defmodule Polyvox.ID3.TagReader do
 	end
 
 	@doc """
-	Gets the tags read from the file.
+	Gets a [`Polyvox.ID3.Tag`](./Polyvox.ID3.Tag.html) read
+  from the file that provides information from
+  higher-versioned ID3 tags before delegating to
+	lower-versioned ID3 tags.
+
+  For example, lets say an MP3 file has both the TRCK
+	frame in a version 2.3 tag and the track byte in a
+	version 1 tag set. The `Polyvox.ID3.Tag` returned by
+	this method will give the information found in the
+	version 2.3 tag.
+
+  In another example, if an MP3 file had both version 1
+  and version 2.3 tags. Now, assume that the version 2.3
+	tag did not have a TYER frame to indicate the year of
+	the recording. Then, the return value of this method
+	will defer to the version 1 tag and return that year
+	value.
 	"""
-	@spec tag(pid) :: list(Polyvox.ID3.Tag.t) | :notready
+	@spec tag(pid) :: Polyvox.ID3.Tag.t | :notready
 	def tag(tag_reader) do
 		GenServer.call(tag_reader, :tag)
 	end

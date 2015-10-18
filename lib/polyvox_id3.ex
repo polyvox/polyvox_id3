@@ -1,6 +1,7 @@
 defmodule Polyvox.ID3 do
 	@moduledoc """
-	A library for reading and writing ID3 tags from and to a file.
+	An entry point into the library that allows you to get readers
+	and writers of ID3 tags.
 	"""
 
   use Application
@@ -12,8 +13,36 @@ defmodule Polyvox.ID3 do
   end
 
 	@doc """
-	Gets the pid of a `TagReader` to read the ID3 tags found in
-	the file located at path.
+  Gets the pid of a `TagReader` to read the ID3 tags found in
+  the file located at path.
+
+  This method takes the path to a file and will return an
+  asynchronous reader of ID3 tags.
+
+  Example Usage
+  -------------
+
+  The following code shows how to get the tag from a tag reader
+  after the asynchronous operations complete.
+
+      alias Polyvox.ID3.TagReader
+      {:ok, reader} = Polyvox.ID3.get_reader("tagged.mp3")
+      tag = get_tag(reader)
+      
+      def get_tag(reader) do
+        reader |> do_get_tag
+      end
+      
+      def do_get_tag(reader, status \\ :notfound)
+      
+      def do_get_tag(reader, :notfound) do
+        status = reader |> TagReader.tag
+        reader |> do_get_tag(status)
+      end
+      
+      def do_get_tag(_, tag) do
+        tag
+      end  
 	"""
 	@spec get_reader(binary) :: {:ok, pid} | {:error, term}
 	def get_reader(path) do
@@ -28,7 +57,11 @@ defmodule Polyvox.ID3 do
   by adding data to the writer, you can get a stream to write
   that will place tags in the proper position within the output.
 
-  ## Example Usage
+  Example Usage
+  -------------
+
+  The following code shows how to write values into the tag
+  writer and put them into the corresponding output stream.
 
 			alias Polyvox.ID3.TagWriter
 			mp3_in_stream = File.stream!("raw.mp3")
