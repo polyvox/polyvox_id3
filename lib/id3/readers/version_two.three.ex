@@ -1,6 +1,6 @@
 defmodule Polyvox.ID3.Readers.VersionTwoThree do
 	@moduledoc false
-	
+
 	defstruct [:podcast, :summary, :title, :number, :participants, :year, :description, :show_notes, :genres, :artwork, :date, :url, :podcast_url, :uid, :s, :version, :size, :synced, :ext, :exp]
 
 	def parse(%{path: path, caller: caller}) do
@@ -102,35 +102,35 @@ defmodule Polyvox.ID3.Readers.VersionTwoThree do
 		|> get_text
 		|> accumulate(:url, device, acc)
 		|> parse_frames
-	end		 
+	end
 
 	defp parse_frame("TIT2", device, acc) do
 		device
 		|> get_text
 		|> accumulate(:title, device, acc)
 		|> parse_frames
-	end		 
+	end
 
 	defp parse_frame("TIT3", device, acc) do
 		device
 		|> get_text
 		|> accumulate(:summary, device, acc)
 		|> parse_frames
-	end		 
+	end
 
 	defp parse_frame("TDAT", device, acc) do
 		device
 		|> get_text
 		|> accumulate(:date, device, acc)
 		|> parse_frames
-	end		 
+	end
 
 	defp parse_frame("TALB", device, acc) do
 		device
 		|> get_text
 		|> accumulate(:podcast, device, acc)
 		|> parse_frames
-	end		 
+	end
 
 	defp parse_frame("COMM", device, acc) do
 		device
@@ -189,7 +189,7 @@ defmodule Polyvox.ID3.Readers.VersionTwoThree do
 			text -> text
 		end
 	end
- 
+
 	defp decode(<< 0xFE, 0xFF >> <> text, 1) do
 		case :unicode.characters_to_binary(text, :utf16, :utf8) do
 			{:incomplete, encoded, _} -> encoded
@@ -197,7 +197,7 @@ defmodule Polyvox.ID3.Readers.VersionTwoThree do
 			text -> text
 		end
 	end
- 
+
 	defp unsync(value) do
 		integer_size = bit_size(value)
 		<< i :: integer-size(integer_size) >> = do_unsync(value)

@@ -22,17 +22,20 @@ defmodule Polyvox.ID3.Writers.VersionTwoThree.Test do
 		|> assert_text("TXXX", "Podcast platform of choice\0polyvox.audio")
 		|> assert_mp3
 		|> assert_empty
-		
+
 		TagWriter.close(writer)
 	end
 
 	test "Version 2.3 tags with all settings", meta do
-		{:ok, writer} = TagWriter.start_link(meta[:stream])
+		{:ok, writer} =
+			meta[:stream]
+		|> TagWriter.start_link
+
 		output =
 			writer
 		|> TagWriter.summary("Our inaugural podcast")
 		|> TagWriter.podcast("polyvox")
-		|> TagWriter.title("Beefsteak Handshake")
+		|> TagWriter.title("Beefsteak Handshake \u{1F4A9}")
 		|> TagWriter.number(1)
 		|> TagWriter.participants(["Bryan", "Heather", "Curtis"])
 		|> TagWriter.year(2015)
@@ -50,13 +53,13 @@ defmodule Polyvox.ID3.Writers.VersionTwoThree.Test do
 		### ID3 Tag Header
 		assert("ID3" <> rest = output)                  # Header preamble
 		assert(<< 3, 0, 0 >> <> rest = rest)            # Version and flags
-		<< 2862 :: integer-size(32) >> <> rest = rest   # Size
+		<< 2889 :: integer-size(32) >> <> rest = rest   # Size
 
 		### ID3 Frames
 		rest
 		|> assert_text("TXXX", "Podcast platform of choice\0polyvox.audio")
 		|> assert_text("TALB", "polyvox")
-		|> assert_text("TIT2", "Beefsteak Handshake")
+		|> assert_utf16("TIT2", "Beefsteak Handshake \u{1F4A9}")
 		|> assert_text("TRCK", "1")
 		|> assert_text("TPE1", "Bryan/Heather/Curtis")
 		|> assert_text("TYER", "2015")
@@ -87,13 +90,13 @@ defmodule Polyvox.ID3.Writers.VersionTwoThree.Test do
 		v = binary_part(rest, 0, value_size)
 		rest = binary_part(rest, value_size, byte_size(rest) - value_size)
 		[owner, id] = String.split(v, "\0")
-		
+
 		assert(k == "UFID")
 		assert(size == value_size)
 		assert(flags == 0)
 		assert(owner == "http://polyvox.audio/guids")
 		assert(id == value)
-		
+
 		rest
 	end
 
@@ -111,13 +114,29 @@ defmodule Polyvox.ID3.Writers.VersionTwoThree.Test do
 		<< encoding >> <> rest = rest
 		v = binary_part(rest, 0, value_size)
 		rest = binary_part(rest, value_size, byte_size(rest) - value_size)
-		
+
 		assert(k == key)
 		assert(size == byte_size(value) + 1)
 		assert(flags == 0)
-		assert(encoding == 1)
+		assert(encoding == 0)
 		assert(v == value)
-		
+
+		rest
+	end
+
+	defp assert_utf16(rest, key, value) do
+		<< k :: binary-size(4) >>  <> rest = rest
+		<< size :: integer-size(32) >> <> rest = rest
+		<< flags :: integer-size(16) >> <> rest = rest
+		<< encoding >> <> rest = rest
+		v = binary_part(rest, 2, size - 3)
+		rest = binary_part(rest, size - 1, byte_size(rest) - size + 1)
+
+		assert(k == key)
+		assert(flags == 0)
+		assert(encoding == 1)
+		assert(v == :unicode.characters_to_binary(value, :utf8, {:utf16, :little}))
+
 		rest
 	end
 
@@ -129,12 +148,12 @@ defmodule Polyvox.ID3.Writers.VersionTwoThree.Test do
 		<< flags :: integer-size(16) >> <> rest = rest
 		v = binary_part(rest, 0, value_size)
 		rest = binary_part(rest, value_size, byte_size(rest) - value_size)
-		
+
 		assert(k == key)
 		assert(size == byte_size(value))
 		assert(flags == 0)
 		assert(v == value)
-		
+
 		rest
 	end
 

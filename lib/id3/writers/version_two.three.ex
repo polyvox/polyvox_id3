@@ -31,7 +31,8 @@ defmodule Polyvox.ID3.Writers.VersionTwoThree do
 
 	defp comments_frame(acc, nil), do: acc
 	defp comments_frame(acc, value) do
-		acc <> "COMM" <> << (byte_size(value) + 5) :: integer-size(32), 0, 0, 1, 0, 0, 0, 0 >> <> value
+		{size, encoding, value} = encode(value)
+		acc <> "COMM" <> << (size + 5) :: integer-size(32), 0, 0, encoding, 0, 0, 0, 0 >> <> value
 	end
 
 	defp id_frame(acc, nil), do: acc
@@ -58,7 +59,8 @@ defmodule Polyvox.ID3.Writers.VersionTwoThree do
 
 	defp text_frame(acc, _, nil), do: acc
 	defp text_frame(acc, key, value) when is_binary(value) do
-		acc <> key <> << (byte_size(value) + 1) :: integer-size(32), 0, 0, 1 >> <> value
+		{size, encoding, value} = encode(value)
+		acc <> key <> << (size + 1) :: integer-size(32), 0, 0, encoding >> <> value
 	end
 
 	defp text_frame(acc, key, value) do
@@ -68,6 +70,19 @@ defmodule Polyvox.ID3.Writers.VersionTwoThree do
 	defp url_frame(acc, _, nil), do: acc
 	defp url_frame(acc, key, value) do
 		acc <> key <> << byte_size(value) :: integer-size(32), 0, 0 >> <> value
+	end
+
+	defp encode(binary) do
+		encode_on_size(binary, String.length(binary), byte_size(binary))
+	end
+
+	defp encode_on_size(binary, string_length, byte_length) when string_length == byte_length do
+		{byte_length, 0, binary}
+	end
+
+	defp encode_on_size(binary, _, _) do
+		binary = << 0xFF, 0xFE >> <> :unicode.characters_to_binary(binary, :utf8, {:utf16, :little})
+		{byte_size(binary), 1, binary}
 	end
 
 	defp to_stream(text) do
