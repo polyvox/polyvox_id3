@@ -46,6 +46,10 @@ defmodule Polyvox.ID3.Readers.VersionTwoThree do
 		end
 	end
 
+	defp parse_frame(<< 0, 0, 0, 0 >>, device, acc) do
+		{device, acc}
+	end
+
 	defp parse_frame("TPE1", device, acc) do
 		device
 		|> get_text
@@ -130,8 +134,7 @@ defmodule Polyvox.ID3.Readers.VersionTwoThree do
 
 	defp parse_frame("COMM", device, acc) do
 		device
-		|> get_text
-		|> ignore(4)
+		|> get_text(ignore: 4)
 		|> String.split("\0")
 		|> List.last
 		|> accumulate(:description, device, acc)
@@ -153,11 +156,6 @@ defmodule Polyvox.ID3.Readers.VersionTwoThree do
 		|> parse_frames
 	end
 
-	defp ignore(s, n) do
-		s
-		|> String.slice(n, String.length(s))
-	end
-
 	defp skip_frame(device, acc) do
 		<< size :: integer-size(32) >> = IO.binread(device, 4)
 		IO.binread(device, 2 + size) # Throw away flags
@@ -168,13 +166,36 @@ defmodule Polyvox.ID3.Readers.VersionTwoThree do
 		{device, Map.put(acc, key, value)}
 	end
 
-	defp get_text(device) do
+	defp get_text(device, opts \\ [ignore: 0]) do
 		<< size :: integer-size(32) >> = IO.binread(device, 4)
 		IO.binread(device, 2) # Throw away flags
-		IO.binread(device, 1) # Throw away encoding
+		<< encoding >> = IO.binread(device, 1)
+		IO.binread(device, opts[:ignore])
 
 		device
-		|> IO.binread(size - 1)
+		|> IO.binread(size - 1 - opts[:ignore])
+		|> decode(encoding)
+		|> trim_junk
+	end
+
+	defp decode(text, 0) do
+		text
+	end
+
+	defp decode(<< 0xFF, 0xFE >> <> text, 1) do
+		case :unicode.characters_to_binary(text, {:utf16, :little}, :utf8) do
+			{:incomplete, encoded, _} -> encoded
+			{:error, _, _} -> {:error, text}
+			text -> text
+		end
+	end
+ 
+	defp decode(<< 0xFE, 0xFF >> <> text, 1) do
+		case :unicode.characters_to_binary(text, :utf16, :utf8) do
+			{:incomplete, encoded, _} -> encoded
+			{:error, _, _} -> {:error, text}
+			text -> text
+		end
 	end
  
 	defp unsync(value) do
@@ -191,6 +212,10 @@ defmodule Polyvox.ID3.Readers.VersionTwoThree do
 
 	defp do_unsync(<< >>) do
 		<< >>
+	end
+
+	defp trim_junk(text) do
+		text |> String.rstrip(?\0)
 	end
 
 	defp send_to({:stop, device}, caller) do

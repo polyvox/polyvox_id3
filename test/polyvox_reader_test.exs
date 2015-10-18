@@ -38,7 +38,7 @@ defmodule Polyvox.Reader.Test do
 		%{v2: tag} = reader |> get_tag
 
 		assert(%{s: 0} = tag)
-		assert(%{size: 469} = tag)
+		assert(%{size: 493} = tag)
 		assert(%{exp: false} = tag)
 		assert(%{ext: false} = tag)
 		assert(%{participants: ["Bryan", "Heather", "Curtis"]} = tag)
@@ -47,13 +47,13 @@ defmodule Polyvox.Reader.Test do
 		assert(%{summary: "Inaugural Awesome Podcast!"} = tag)
  		assert(%{description: "The first episode of the world's \u{1F608} podcast brought to you by the letter N."} = tag)
 		assert(%{url: "http://awesome.audio/1"} = tag)
-		assert(%{genres: "Speech"} = tag)
+		assert(%{genres: "(101)"} = tag)
 		assert(%{year: 2013} = tag)
-		assert(%{title: "World's Best First Podcast!"} = tag)
+		assert(%{title: "World's Best First Podcast!\u{1F4A9}"} = tag)
 		assert(%{uid: "2CA119D7-1A5D-4CBE-BE5D-06A001B53B52"} = tag)
 		assert(%{show_notes: "<h1>WORLD'S BEST!</h1>"} = tag)
 		assert(%{date: "0603"} = tag)
-		assert(%{number: 1} = tag)
+		assert(%{number: 2} = tag)
 		
 		reader |> Polyvox.ID3.TagReader.close
 	end
