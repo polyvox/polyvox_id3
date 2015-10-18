@@ -1,9 +1,7 @@
 defmodule Polyvox.ID3.TagWriterSupervisor do
 	use Supervisor
 
-	@moduledoc """
-	A supervisor that creates and supervises `TagWriter`s.
-	"""
+	@moduledoc false
 
 	@doc """
 	Convenience function to start the supervisor.

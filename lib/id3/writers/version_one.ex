@@ -1,4 +1,6 @@
 defmodule Polyvox.ID3.Writers.VersionOne do
+	@moduledoc false
+	
 	def stream(state) do
 		[do_text_stream("TAG"),
 		 do_text_stream(Map.get(state, :title), 30),

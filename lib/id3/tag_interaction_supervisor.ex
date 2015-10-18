@@ -1,4 +1,6 @@
 defmodule Polyvox.ID3.TagInteractionSupervisor do
+	@moduledoc false
+	
 	use Supervisor
 
 	def start_link do

@@ -1,4 +1,6 @@
 defmodule Polyvox.ID3.Writers.VersionTwoThree do
+	@moduledoc false
+	
 	def stream(state) do
 		do_frames(state)
 		|> add_header

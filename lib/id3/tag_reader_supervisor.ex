@@ -1,9 +1,7 @@
 defmodule Polyvox.ID3.TagReaderSupervisor do
-	use Supervisor
+	@moduledoc false
 
-	@moduledoc """
-	A supervisor that creates `TagReader`s.
-	"""
+	use Supervisor
 
 	@doc """
 	Convenience function to start the supervisor.
