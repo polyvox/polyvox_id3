@@ -1,0 +1,756 @@
+    <!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Polyvox.ID3.TagWriter – polyvox_id3 v0.0.1</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="ExDoc v0.10.0">
+    <link rel="stylesheet" href="dist/app.css" />
+    <script src="dist/sidebar_items.js"></script>
+  </head>
+  <body data-type="modules">
+
+    <div class="main">
+<button class="sidebar-toggle">
+  <i class="icon-menu"></i>
+</button>
+<section class="sidebar">
+  <button class="sidebar-toggle">
+    <i class="icon-menu"></i>
+  </button>
+
+  
+  <a href="extra-readme.html" class="sidebar-projectLink">
+    <div class="sidebar-projectDetails">
+      <h1 class="sidebar-projectName">
+        polyvox_id3
+      </h1>
+      <h2 class="sidebar-projectVersion">
+        v0.0.1
+      </h2>
+    </div>
+    
+  </a>
+
+  <div class="sidebar-search">
+    <i class="icon-search"></i>
+    <input type="text" class="sidebar-searchInput" placeholder="search" autocomplete="off" />
+  </div>
+
+  <ul class="sidebar-listNav">
+    <li><a id="extras-list" href="#full-list">Pages</a></li>
+
+    
+      <li><a id="modules-list" href="#full-list">Modules</a></li>
+    
+
+    
+
+    
+      <li><a id="protocols-list" href="#full-list">Protocols</a></li>
+    
+  </ul>
+
+  <ul id="full-list" class="sidebar-fullList"></ul>
+  <div class="sidebar-noResults"></div>
+</section>
+
+<section class="content">
+  <div id="content" class="content-inner">
+
+
+      <h1>
+        Polyvox.ID3.TagWriter
+        
+        
+      </h1>
+
+      
+        <section id="moduledoc" class="docstring">
+          <p>Provides a way to write tags around a given stream.</p>
+<p> You should get a reference to a tag writer through the
+<a href="./Polyvox.ID3.html#get_writer/1"><code class="inline">Polyvox.ID3.get_writer</code></a> method.</p>
+
+        </section>
+      
+
+      
+        <section id="summary" class="details-list">
+          <h1 class="section-heading">
+            <a class="hover-link" href="#summary">
+              <i class="icon-link"></i>
+            </a>
+            Summary
+          </h1>
+          
+
+          
+  <div class="summary-functions summary">
+    <h2>
+      <a href="#functions">Functions</a>
+    </h2>
+    <div class="summary-row">
+  <div class="summary-signature">
+    <a href="#artwork/2">artwork(pid, value)</a>
+  </div>
+  
+    <div class="summary-synopsis"><p>Sets the embedded artwork for the episode</p>
+</div>
+  
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#close/1">close(pid)</a>
+  </div>
+  
+    <div class="summary-synopsis"><p>Closes the writer and stops the process</p>
+</div>
+  
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#date/2">date(pid, value)</a>
+  </div>
+  
+    <div class="summary-synopsis"><p>Sets the date or the recording (in expected DDMM) format for the episode</p>
+</div>
+  
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#description/2">description(pid, value)</a>
+  </div>
+  
+    <div class="summary-synopsis"><p>Sets the description of the episode</p>
+</div>
+  
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#genres/2">genres(pid, value)</a>
+  </div>
+  
+    <div class="summary-synopsis"><p>Sets the list of genres for the episode</p>
+</div>
+  
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#number/2">number(pid, value)</a>
+  </div>
+  
+    <div class="summary-synopsis"><p>Sets the value of the episode number</p>
+</div>
+  
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#participants/2">participants(pid, value)</a>
+  </div>
+  
+    <div class="summary-synopsis"><p>Sets the list of people that participated in the episode</p>
+</div>
+  
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#podcast/2">podcast(pid, value)</a>
+  </div>
+  
+    <div class="summary-synopsis"><p>Sets the value of the podcast name</p>
+</div>
+  
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#podcast_url/2">podcast_url(pid, value)</a>
+  </div>
+  
+    <div class="summary-synopsis"><p>Sets the URL for the podcast</p>
+</div>
+  
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#set/3">set(pid, atom, value)</a>
+  </div>
+  
+    <div class="summary-synopsis"><p>A generic method for setting the value of the supplied <code class="inline">atom</code> for the
+writer</p>
+</div>
+  
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#show_notes/2">show_notes(pid, value)</a>
+  </div>
+  
+    <div class="summary-synopsis"><p>Sets the show notes for the episode</p>
+</div>
+  
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#start_link/1">start_link(stream)</a>
+  </div>
+  
+    <div class="summary-synopsis"><p>Starts the process and links it to the current process</p>
+</div>
+  
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#stream/2">stream(pid, opts \\ [v1: true, v2_3: true])</a>
+  </div>
+  
+    <div class="summary-synopsis"><p>Gets a stream that will write the tags around the originally supplied
+stream. By default, the writer will write both version 1 and 2.3 tags</p>
+</div>
+  
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#summary/2">summary(pid, value)</a>
+  </div>
+  
+    <div class="summary-synopsis"><p>Sets the content of the episode summary</p>
+</div>
+  
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#title/2">title(pid, value)</a>
+  </div>
+  
+    <div class="summary-synopsis"><p>Sets the value of the episode title</p>
+</div>
+  
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#uid/2">uid(pid, value)</a>
+  </div>
+  
+    <div class="summary-synopsis"><p>Sets the unique identifier for the episode</p>
+</div>
+  
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#url/2">url(pid, value)</a>
+  </div>
+  
+    <div class="summary-synopsis"><p>Sets the URL where someone can find this episode</p>
+</div>
+  
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#year/2">year(pid, value)</a>
+  </div>
+  
+    <div class="summary-synopsis"><p>Sets the year of the podcast recording</p>
+</div>
+  
+</div>
+
+  </div>
+
+
+          
+
+          
+
+        </section>
+      
+
+      
+
+      
+        <section id="functions" class="details-list">
+          <h1 class="section-heading">
+            <a class="hover-link" href="#functions">
+              <i class="icon-link"></i>
+            </a>
+            Functions
+          </h1>
+          <div class="detail" id="artwork/2">
+  <div class="detail-header">
+    <a href="#artwork/2" class="detail-link" title="Link to this function">
+      <i class="icon-link"></i>
+    </a>
+    <span class="signature">artwork(pid, value)</span>
+      
+  </div>
+  
+    <div class="specs">
+      <h4 class="specs-title">Specs</h4>
+      <div class="specs-list">
+        
+          <pre><code class="elixir">artwork(pid, <a href="http://elixir-lang.org/docs/stable/elixir/Stream.html#t:t/0">Stream.t</a>) :: pid</code></pre>
+        
+      </div>
+    </div>
+  
+  <section class="docstring">
+    <p>Sets the embedded artwork for the episode.</p>
+<p><strong>Note: This is not yet implemented because it’s not MVP.</strong></p>
+
+  </section>
+</div>
+<div class="detail" id="close/1">
+  <div class="detail-header">
+    <a href="#close/1" class="detail-link" title="Link to this function">
+      <i class="icon-link"></i>
+    </a>
+    <span class="signature">close(pid)</span>
+      
+  </div>
+  
+    <div class="specs">
+      <h4 class="specs-title">Specs</h4>
+      <div class="specs-list">
+        
+          <pre><code class="elixir">close(pid) :: :ok</code></pre>
+        
+      </div>
+    </div>
+  
+  <section class="docstring">
+    <p>Closes the writer and stops the process.</p>
+
+  </section>
+</div>
+<div class="detail" id="date/2">
+  <div class="detail-header">
+    <a href="#date/2" class="detail-link" title="Link to this function">
+      <i class="icon-link"></i>
+    </a>
+    <span class="signature">date(pid, value)</span>
+      
+  </div>
+  
+    <div class="specs">
+      <h4 class="specs-title">Specs</h4>
+      <div class="specs-list">
+        
+          <pre><code class="elixir">date(pid, binary) :: pid</code></pre>
+        
+      </div>
+    </div>
+  
+  <section class="docstring">
+    <p>Sets the date or the recording (in expected DDMM) format for the episode.</p>
+
+  </section>
+</div>
+<div class="detail" id="description/2">
+  <div class="detail-header">
+    <a href="#description/2" class="detail-link" title="Link to this function">
+      <i class="icon-link"></i>
+    </a>
+    <span class="signature">description(pid, value)</span>
+      
+  </div>
+  
+    <div class="specs">
+      <h4 class="specs-title">Specs</h4>
+      <div class="specs-list">
+        
+          <pre><code class="elixir">description(pid, binary) :: pid</code></pre>
+        
+      </div>
+    </div>
+  
+  <section class="docstring">
+    <p>Sets the description of the episode.</p>
+
+  </section>
+</div>
+<div class="detail" id="genres/2">
+  <div class="detail-header">
+    <a href="#genres/2" class="detail-link" title="Link to this function">
+      <i class="icon-link"></i>
+    </a>
+    <span class="signature">genres(pid, value)</span>
+      
+  </div>
+  
+    <div class="specs">
+      <h4 class="specs-title">Specs</h4>
+      <div class="specs-list">
+        
+          <pre><code class="elixir">genres(pid, [integer]) :: pid</code></pre>
+        
+      </div>
+    </div>
+  
+  <section class="docstring">
+    <p>Sets the list of genres for the episode.</p>
+
+  </section>
+</div>
+<div class="detail" id="number/2">
+  <div class="detail-header">
+    <a href="#number/2" class="detail-link" title="Link to this function">
+      <i class="icon-link"></i>
+    </a>
+    <span class="signature">number(pid, value)</span>
+      
+  </div>
+  
+    <div class="specs">
+      <h4 class="specs-title">Specs</h4>
+      <div class="specs-list">
+        
+          <pre><code class="elixir">number(pid, integer) :: pid</code></pre>
+        
+      </div>
+    </div>
+  
+  <section class="docstring">
+    <p>Sets the value of the episode number.</p>
+
+  </section>
+</div>
+<div class="detail" id="participants/2">
+  <div class="detail-header">
+    <a href="#participants/2" class="detail-link" title="Link to this function">
+      <i class="icon-link"></i>
+    </a>
+    <span class="signature">participants(pid, value)</span>
+      
+  </div>
+  
+    <div class="specs">
+      <h4 class="specs-title">Specs</h4>
+      <div class="specs-list">
+        
+          <pre><code class="elixir">participants(pid, [binary]) :: pid</code></pre>
+        
+      </div>
+    </div>
+  
+  <section class="docstring">
+    <p>Sets the list of people that participated in the episode.</p>
+
+  </section>
+</div>
+<div class="detail" id="podcast/2">
+  <div class="detail-header">
+    <a href="#podcast/2" class="detail-link" title="Link to this function">
+      <i class="icon-link"></i>
+    </a>
+    <span class="signature">podcast(pid, value)</span>
+      
+  </div>
+  
+    <div class="specs">
+      <h4 class="specs-title">Specs</h4>
+      <div class="specs-list">
+        
+          <pre><code class="elixir">podcast(pid, binary) :: pid</code></pre>
+        
+      </div>
+    </div>
+  
+  <section class="docstring">
+    <p>Sets the value of the podcast name.</p>
+
+  </section>
+</div>
+<div class="detail" id="podcast_url/2">
+  <div class="detail-header">
+    <a href="#podcast_url/2" class="detail-link" title="Link to this function">
+      <i class="icon-link"></i>
+    </a>
+    <span class="signature">podcast_url(pid, value)</span>
+      
+  </div>
+  
+    <div class="specs">
+      <h4 class="specs-title">Specs</h4>
+      <div class="specs-list">
+        
+          <pre><code class="elixir">podcast_url(pid, binary) :: pid</code></pre>
+        
+      </div>
+    </div>
+  
+  <section class="docstring">
+    <p>Sets the URL for the podcast.</p>
+
+  </section>
+</div>
+<div class="detail" id="set/3">
+  <div class="detail-header">
+    <a href="#set/3" class="detail-link" title="Link to this function">
+      <i class="icon-link"></i>
+    </a>
+    <span class="signature">set(pid, atom, value)</span>
+      
+  </div>
+  
+    <div class="specs">
+      <h4 class="specs-title">Specs</h4>
+      <div class="specs-list">
+        
+          <pre><code class="elixir">set(pid, atom, binary) :: pid</code></pre>
+        
+      </div>
+    </div>
+  
+  <section class="docstring">
+    <p>A generic method for setting the value of the supplied <code class="inline">atom</code> for the
+writer.</p>
+<p> Supported atoms for this method are as follows:</p>
+<ul>
+<li><code class="inline">:artwork</code>
+</li>
+<li><code class="inline">:date</code>
+</li>
+<li><code class="inline">:description</code>
+</li>
+<li><code class="inline">:genres</code>
+</li>
+<li><code class="inline">:number</code>
+</li>
+<li><code class="inline">:participants</code>
+</li>
+<li><code class="inline">:podcast</code>
+</li>
+<li><code class="inline">:podcast_url</code>
+</li>
+<li><code class="inline">:show_notes</code>
+</li>
+<li><code class="inline">:summary</code>
+</li>
+<li><code class="inline">:title</code>
+</li>
+<li><code class="inline">:uid</code>
+</li>
+<li><code class="inline">:url</code>
+</li>
+<li><code class="inline">:year</code>
+</li>
+</ul>
+<p> For expected <code class="inline">values</code> associated with each of those atoms, see the
+corresponding method with the same name.</p>
+
+  </section>
+</div>
+<div class="detail" id="show_notes/2">
+  <div class="detail-header">
+    <a href="#show_notes/2" class="detail-link" title="Link to this function">
+      <i class="icon-link"></i>
+    </a>
+    <span class="signature">show_notes(pid, value)</span>
+      
+  </div>
+  
+    <div class="specs">
+      <h4 class="specs-title">Specs</h4>
+      <div class="specs-list">
+        
+          <pre><code class="elixir">show_notes(pid, binary) :: pid</code></pre>
+        
+      </div>
+    </div>
+  
+  <section class="docstring">
+    <p>Sets the show notes for the episode.</p>
+
+  </section>
+</div>
+<div class="detail" id="start_link/1">
+  <div class="detail-header">
+    <a href="#start_link/1" class="detail-link" title="Link to this function">
+      <i class="icon-link"></i>
+    </a>
+    <span class="signature">start_link(stream)</span>
+      
+  </div>
+  
+    <div class="specs">
+      <h4 class="specs-title">Specs</h4>
+      <div class="specs-list">
+        
+          <pre><code class="elixir">start_link(<a href="http://elixir-lang.org/docs/stable/elixir/Stream.html#t:t/0">Stream.t</a>) :: {:ok, pid} | {:error, term}</code></pre>
+        
+      </div>
+    </div>
+  
+  <section class="docstring">
+    <p>Starts the process and links it to the current process.</p>
+
+  </section>
+</div>
+<div class="detail" id="stream/2">
+  <div class="detail-header">
+    <a href="#stream/2" class="detail-link" title="Link to this function">
+      <i class="icon-link"></i>
+    </a>
+    <span class="signature">stream(pid, opts \\ [v1: true, v2_3: true])</span>
+      
+  </div>
+  
+    <div class="specs">
+      <h4 class="specs-title">Specs</h4>
+      <div class="specs-list">
+        
+          <pre><code class="elixir">stream(pid, <a href="http://elixir-lang.org/docs/stable/elixir/Keyword.html#t:t/0">Keyword.t</a>) :: pid</code></pre>
+        
+      </div>
+    </div>
+  
+  <section class="docstring">
+    <p>Gets a stream that will write the tags around the originally supplied
+stream. By default, the writer will write both version 1 and 2.3 tags.</p>
+<p>By setting <code class="inline">v1: true</code>, the writer will write version 1 tags.
+By setting <code class="inline">v2_3: true</code>, the writer will write version 2 tags.</p>
+
+  </section>
+</div>
+<div class="detail" id="summary/2">
+  <div class="detail-header">
+    <a href="#summary/2" class="detail-link" title="Link to this function">
+      <i class="icon-link"></i>
+    </a>
+    <span class="signature">summary(pid, value)</span>
+      
+  </div>
+  
+    <div class="specs">
+      <h4 class="specs-title">Specs</h4>
+      <div class="specs-list">
+        
+          <pre><code class="elixir">summary(pid, binary) :: pid</code></pre>
+        
+      </div>
+    </div>
+  
+  <section class="docstring">
+    <p>Sets the content of the episode summary.</p>
+
+  </section>
+</div>
+<div class="detail" id="title/2">
+  <div class="detail-header">
+    <a href="#title/2" class="detail-link" title="Link to this function">
+      <i class="icon-link"></i>
+    </a>
+    <span class="signature">title(pid, value)</span>
+      
+  </div>
+  
+    <div class="specs">
+      <h4 class="specs-title">Specs</h4>
+      <div class="specs-list">
+        
+          <pre><code class="elixir">title(pid, binary) :: pid</code></pre>
+        
+      </div>
+    </div>
+  
+  <section class="docstring">
+    <p>Sets the value of the episode title.</p>
+
+  </section>
+</div>
+<div class="detail" id="uid/2">
+  <div class="detail-header">
+    <a href="#uid/2" class="detail-link" title="Link to this function">
+      <i class="icon-link"></i>
+    </a>
+    <span class="signature">uid(pid, value)</span>
+      
+  </div>
+  
+    <div class="specs">
+      <h4 class="specs-title">Specs</h4>
+      <div class="specs-list">
+        
+          <pre><code class="elixir">uid(pid, binary) :: pid</code></pre>
+        
+      </div>
+    </div>
+  
+  <section class="docstring">
+    <p>Sets the unique identifier for the episode.</p>
+
+  </section>
+</div>
+<div class="detail" id="url/2">
+  <div class="detail-header">
+    <a href="#url/2" class="detail-link" title="Link to this function">
+      <i class="icon-link"></i>
+    </a>
+    <span class="signature">url(pid, value)</span>
+      
+  </div>
+  
+    <div class="specs">
+      <h4 class="specs-title">Specs</h4>
+      <div class="specs-list">
+        
+          <pre><code class="elixir">url(pid, binary) :: pid</code></pre>
+        
+      </div>
+    </div>
+  
+  <section class="docstring">
+    <p>Sets the URL where someone can find this episode.</p>
+
+  </section>
+</div>
+<div class="detail" id="year/2">
+  <div class="detail-header">
+    <a href="#year/2" class="detail-link" title="Link to this function">
+      <i class="icon-link"></i>
+    </a>
+    <span class="signature">year(pid, value)</span>
+      
+  </div>
+  
+    <div class="specs">
+      <h4 class="specs-title">Specs</h4>
+      <div class="specs-list">
+        
+          <pre><code class="elixir">year(pid, integer) :: pid</code></pre>
+        
+      </div>
+    </div>
+  
+  <section class="docstring">
+    <p>Sets the year of the podcast recording.</p>
+
+  </section>
+</div>
+
+        </section>
+      
+
+      
+
+      
+        <footer class="footer">
+      <p>
+        <span class="line">
+          Built using
+          <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" rel="help" target="_blank">ExDoc</a> (v0.10.0),
+        </span>
+        <span class="line">
+          designed by
+          <a href="https://twitter.com/dignifiedquire" target="_blank" title="@dignifiedquire">Friedel Ziegelmayer</a>.
+          </span>
+      </p>
+    </footer>
+  </div>
+</section>
+</div>
+    <script src="dist/app.js"></script>
+  </body>
+</html>
+
