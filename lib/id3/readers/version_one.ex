@@ -20,26 +20,26 @@ defmodule Polyvox.ID3.Readers.VersionOne do
 	end
 
 	defp match_tag(<< "TAG",
-								    title     :: binary-size(30),
-								 		artist    :: binary-size(30),
-										album     :: binary-size(30),
-										year      :: binary-size(4),
-										comment   :: binary-size(28),
+										title			:: binary-size(30),
+										artist		:: binary-size(30),
+										album			:: binary-size(30),
+										year			:: binary-size(4),
+										comment		:: binary-size(28),
 										0,
 										track_num :: binary-size(1),
-										genre     :: binary-size(1) >>,
+										genre			:: binary-size(1) >>,
 								 start_position,
 								 end_position) do
 		map_to_struct(title, artist, album, year, comment, track_num, genre, start_position, end_position)
 	end
 
 	defp match_tag(<< "TAG",
-								    title   :: binary-size(30),
-								 		artist  :: binary-size(30),
-										album   :: binary-size(30),
-										year    :: binary-size(4),
+										title		:: binary-size(30),
+										artist	:: binary-size(30),
+										album		:: binary-size(30),
+										year		:: binary-size(4),
 										comment :: binary-size(30),
-										genre   :: binary-size(1) >>,
+										genre		:: binary-size(1) >>,
 								 start_position,
 								 end_position) do
 		map_to_struct(title, artist, album, year, comment, "0", genre, start_position, end_position)

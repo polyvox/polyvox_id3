@@ -24,7 +24,7 @@ defmodule Polyvox.ID3.Readers.VersionTwoThree do
 		|> parse_header(IO.binread(device, 10))
 	end
 
-	defp parse_header({device, acc}, << ?I, ?D, ?3, 3, 0, sync :: size(1), ext :: size(1), exp :: size(1), 0 :: size(5),  size :: binary-size(4) >>) do
+	defp parse_header({device, acc}, << ?I, ?D, ?3, 3, 0, sync :: size(1), ext :: size(1), exp :: size(1), 0 :: size(5),	size :: binary-size(4) >>) do
 		{device, %__MODULE__{acc | size: unsync(size) + 10, synced: sync == 1, ext: ext == 1, exp: exp == 1}}
 	end
 
@@ -51,10 +51,10 @@ defmodule Polyvox.ID3.Readers.VersionTwoThree do
 	end
 
 	defp process_frame(device, acc, key),
-	  do: device |> process_frame(acc, key, &(&1))
+		do: device |> process_frame(acc, key, &(&1))
 
 	defp process_frame(device, acc, key, modifier),
-	  do: device |> process_frame(acc, key, modifier, 0)
+		do: device |> process_frame(acc, key, modifier, 0)
 
 	defp process_frame(device, acc, key, modifier, ignore) do
 		device
@@ -77,13 +77,13 @@ defmodule Polyvox.ID3.Readers.VersionTwoThree do
 		do: device |> process_frame(acc, :title)
 
 	defp parse_frame("TIT3", device, acc),
-	  do: device |> process_frame(acc, :summary)
+		do: device |> process_frame(acc, :summary)
 
 	defp parse_frame("TDAT", device, acc),
-	  do: device |> process_frame(acc, :date)
+		do: device |> process_frame(acc, :date)
 
 	defp parse_frame("TALB", device, acc),
-	  do: device |> process_frame(acc, :podcast)
+		do: device |> process_frame(acc, :podcast)
 
 	defp parse_frame("TYER", device, acc),
 		do: device |> process_frame(acc, :year, &String.to_integer/1)
