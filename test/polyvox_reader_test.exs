@@ -35,7 +35,7 @@ defmodule Polyvox.Reader.Test do
 	test "can read version 2.3 tag" do
 		{:ok, reader} = System.cwd |> Path.join("test/test.v2.3") |> Polyvox.ID3.get_reader
 
-		%{v2: tag} = reader |> get_tag
+		%{v2_3: tag} = reader |> get_tag
 
 		assert(%{s: 0} = tag)
 		assert(%{size: 493} = tag)

@@ -50,110 +50,69 @@ defmodule Polyvox.ID3.Readers.VersionTwoThree do
 		{device, acc}
 	end
 
-	defp parse_frame("TPE1", device, acc) do
+	defp process_frame(device, acc, key),
+	  do: device |> process_frame(acc, key, &(&1))
+
+	defp process_frame(device, acc, key, modifier),
+	  do: device |> process_frame(acc, key, modifier, 0)
+
+	defp process_frame(device, acc, key, modifier, ignore) do
 		device
-		|> get_text
-		|> String.split("/")
-		|> accumulate(:participants, device, acc)
+		|> get_text(ignore: ignore)
+		|> modifier.()
+		|> accumulate(key, device, acc)
 		|> parse_frames
 	end
+	
+	defp parse_frame("WOAS", device, acc),
+		do: device |> process_frame(acc, :podcast_url)
 
-	defp parse_frame("TXXX", device, acc) do
-		device
-		|> get_text
-		|> String.split("\0")
-		|> List.last
-		|> accumulate(:show_notes, device, acc)
-		|> parse_frames
-	end
+	defp parse_frame("TCON", device, acc),
+		do: device |> process_frame(acc, :genres)
 
-	defp parse_frame("WOAS", device, acc) do
-		device
-		|> get_text
-		|> accumulate(:podcast_url, device, acc)
-		|> parse_frames
-	end
+	defp parse_frame("WOAF", device, acc),
+		do: device |> process_frame(acc, :url)
 
-	defp parse_frame("TCON", device, acc) do
-		device
-		|> get_text
-		|> accumulate(:genres, device, acc)
-		|> parse_frames
-	end
+	defp parse_frame("TIT2", device, acc),
+		do: device |> process_frame(acc, :title)
 
-	defp parse_frame("TYER", device, acc) do
-		device
-		|> get_text
-		|> String.to_integer
-		|> accumulate(:year, device, acc)
-		|> parse_frames
-	end
+	defp parse_frame("TIT3", device, acc),
+	  do: device |> process_frame(acc, :summary)
 
-	defp parse_frame("TRCK", device, acc) do
-		device
-		|> get_text
-		|> String.to_integer
-		|> accumulate(:number, device, acc)
-		|> parse_frames
-	end
+	defp parse_frame("TDAT", device, acc),
+	  do: device |> process_frame(acc, :date)
 
-	defp parse_frame("WOAF", device, acc) do
-		device
-		|> get_text
-		|> accumulate(:url, device, acc)
-		|> parse_frames
-	end
+	defp parse_frame("TALB", device, acc),
+	  do: device |> process_frame(acc, :podcast)
 
-	defp parse_frame("TIT2", device, acc) do
-		device
-		|> get_text
-		|> accumulate(:title, device, acc)
-		|> parse_frames
-	end
+	defp parse_frame("TYER", device, acc),
+		do: device |> process_frame(acc, :year, &String.to_integer/1)
 
-	defp parse_frame("TIT3", device, acc) do
-		device
-		|> get_text
-		|> accumulate(:summary, device, acc)
-		|> parse_frames
-	end
+	defp parse_frame("TRCK", device, acc),
+		do: device |> process_frame(acc, :number, &String.to_integer/1)
 
-	defp parse_frame("TDAT", device, acc) do
-		device
-		|> get_text
-		|> accumulate(:date, device, acc)
-		|> parse_frames
-	end
+	defp parse_frame("TPE1", device, acc),
+		do: device |> process_frame(acc, :participants, &(String.split(&1, "/")))
 
-	defp parse_frame("TALB", device, acc) do
-		device
-		|> get_text
-		|> accumulate(:podcast, device, acc)
-		|> parse_frames
-	end
+	defp parse_frame("TXXX", device, acc),
+		do: device |> process_frame(acc, :show_notes, &value_of_described_frame/1)
 
-	defp parse_frame("COMM", device, acc) do
-		device
-		|> get_text(ignore: 4)
-		|> String.split("\0")
-		|> List.last
-		|> accumulate(:description, device, acc)
-		|> parse_frames
-	end
+	defp parse_frame("UFID", device, acc),
+		do: device |> process_frame(acc, :uid, &value_of_described_frame/1)
 
-	defp parse_frame("UFID", device, acc) do
-		device
-		|> get_text
-		|> String.split("\0")
-		|> List.last
-		|> accumulate(:uid, device, acc)
-		|> parse_frames
-	end
+	defp parse_frame("COMM", device, acc),
+		do: device |> process_frame(acc, :description, &value_of_described_frame/1, 4)
 
-	defp parse_frame(_, device, acc) do
+	defp parse_frame(_unknown_frame_id, device, acc) do
 		device
 		|> skip_frame(acc)
 		|> parse_frames
+	end
+
+	defp value_of_described_frame(text) do
+		text
+		|> String.split("\0")
+		|> List.last
 	end
 
 	defp skip_frame(device, acc) do
@@ -219,16 +178,16 @@ defmodule Polyvox.ID3.Readers.VersionTwoThree do
 	end
 
 	defp send_to({:stop, device}, caller) do
-		send(caller, {:v2, :notfound})
+		send(caller, {:v2_3, :notfound})
 		device
 	end
 
 	defp send_to({device, content}, caller) do
-		send(caller, {:v2, content})
+		send(caller, {:v2_3, content})
 		device
 	end
 
-	defp inform_error({:error, :enoent}, caller) do
-		send(caller, {:error, :v2, :enoent})
+	defp inform_error({:error, reason}, caller) do
+		send(caller, {:error, :v2_3, reason})
 	end
 end

@@ -9,7 +9,7 @@ defmodule Polyvox.ID3.TagReader do
 
 	use GenServer
 
-	defstruct [:v1, :v2]
+	defstruct [:v1, :v2_3]
 
 	@doc """
 	Starts a tag reader for the file at the specified path.
@@ -82,7 +82,15 @@ defmodule Polyvox.ID3.TagReader do
 		{:stop, {:error, reason}, state}
 	end
 
-	def handle_info({:v1, tag}, {_, %{v2: nil} = struct}) do
+	def handle_info({:error, :v2_3, :einval}, {_, struct}) do
+		{:noreply, {:parsed, %__MODULE__{struct | v2_3: :notfound}}}
+	end
+
+	def handle_info({:error, :v2_3, reason}, state) do
+		{:stop, {:error, reason}, state}
+	end
+
+	def handle_info({:v1, tag}, {_, %{v2_3: nil} = struct}) do
 		{:noreply, {:unparsed, %__MODULE__{struct | v1: tag}}}
 	end
 	
@@ -90,12 +98,12 @@ defmodule Polyvox.ID3.TagReader do
 		{:noreply, {:parsed, %__MODULE__{struct | v1: tag}}}
 	end
 	
-	def handle_info({:v2, tag}, {_, %{v1: nil} = struct}) do
-		{:noreply, {:unparsed, %__MODULE__{struct | v2: tag}}}
+	def handle_info({:v2_3, tag}, {_, %{v1: nil} = struct}) do
+		{:noreply, {:unparsed, %__MODULE__{struct | v2_3: tag}}}
 	end
 	
-	def handle_info({:v2, tag}, {_, struct}) do
-		{:noreply, {:parsed, %__MODULE__{struct | v2: tag}}}
+	def handle_info({:v2_3, tag}, {_, struct}) do
+		{:noreply, {:parsed, %__MODULE__{struct | v2_3: tag}}}
 	end
 	
 	defp run_task(module, path) do
@@ -131,8 +139,8 @@ defmodule Polyvox.ID3.TagReader do
 		
 		def uid(tag), do: tag |> get(:uid)
 
-		defp get(%{v2: v2, v1: v1}, atom) do
-			get_prop(v2, atom) || get_prop(v1, atom) || :notfound
+		defp get(%{v2_3: v2_3, v1: v1}, atom) do
+			get_prop(v2_3, atom) || get_prop(v1, atom) || :notfound
 		end
 
 		defp get_prop(nil, _), do: nil
