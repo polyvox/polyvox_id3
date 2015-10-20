@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/polyvox/polyvox_id3.svg?branch=develop)](https://travis-ci.org/polyvox/polyvox_id3)
+
 # Polyvox.ID3
 
 A podcast-centric ID3 library for parsing and writing ID3 tags.
