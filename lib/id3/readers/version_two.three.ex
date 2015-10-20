@@ -7,8 +7,17 @@ defmodule Polyvox.ID3.Readers.VersionTwoThree do
 		File.open(path) |> parse_or_error(caller)
 	end
 
-	defp parse_or_error({:ok, device}, caller), do: device |> parse_tag |> send_to(caller) |> File.close
-	defp parse_or_error(e, caller), do: e |> inform_error(caller)
+	defp parse_or_error({:ok, device}, caller) do
+		device
+		|> parse_tag
+		|> send_to(caller)
+		|> File.close
+	end
+
+	defp parse_or_error(e, caller) do
+		e
+		|> inform_error(caller)
+	end
 
 	defp parse_tag(device) do
 		{:ok, pos} = :file.position(device, :cur)
@@ -95,13 +104,13 @@ defmodule Polyvox.ID3.Readers.VersionTwoThree do
 		do: device |> process_frame(acc, :participants, &(String.split(&1, "/")))
 
 	defp parse_frame("TXXX", device, acc),
-		do: device |> process_frame(acc, :show_notes, &value_of_described_frame/1)
+		do: device |> process_frame(acc, :show_notes, &value_after_0/1)
 
 	defp parse_frame("UFID", device, acc),
-		do: device |> process_frame(acc, :uid, &value_of_described_frame/1)
+		do: device |> process_frame(acc, :uid, &value_after_0/1)
 
 	defp parse_frame("COMM", device, acc),
-		do: device |> process_frame(acc, :description, &value_of_described_frame/1, 4)
+		do: device |> process_frame(acc, :description, &value_after_0/1, 4)
 
 	defp parse_frame(_unknown_frame_id, device, acc) do
 		device
@@ -109,7 +118,7 @@ defmodule Polyvox.ID3.Readers.VersionTwoThree do
 		|> parse_frames
 	end
 
-	defp value_of_described_frame(text) do
+	defp value_after_0(text) do
 		text
 		|> String.split("\0")
 		|> List.last
@@ -150,7 +159,7 @@ defmodule Polyvox.ID3.Readers.VersionTwoThree do
 	end
 
 	defp decode(<< 0xFE, 0xFF >> <> text, 1) do
-		case :unicode.characters_to_binary(text, :utf16, :utf8) do
+		case :unicode.characters_to_binary(text, {:utf, :big}, :utf8) do
 			{:incomplete, encoded, _} -> encoded
 			{:error, _, _} -> {:error, text}
 			text -> text
@@ -166,7 +175,10 @@ defmodule Polyvox.ID3.Readers.VersionTwoThree do
 	defp do_unsync(<< 0 :: size(1), x :: size(7) >> <> rest) do
 		remaining_size = 7 * byte_size(rest)
 		padding_size = byte_size(rest) + 1
-		<< 0 :: size(padding_size), x :: size(7), unsync(rest) :: size(remaining_size) >>
+
+		<< 0 :: size(padding_size),
+			 x :: size(7),
+			 unsync(rest) :: size(remaining_size) >>
 	end
 
 	defp do_unsync(<< >>) do

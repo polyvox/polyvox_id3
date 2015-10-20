@@ -7,8 +7,17 @@ defmodule Polyvox.ID3.Readers.VersionOne do
 		File.open(path) |> parse_or_error(caller)
 	end
 
-	defp parse_or_error({:ok, device}, caller), do: device |> do_parse |> send_to(caller) |> File.close
-	defp parse_or_error(e, caller), do: e |> inform_error(caller)
+	defp parse_or_error({:ok, device}, caller) do
+		device
+		|> do_parse
+		|> send_to(caller)
+		|> File.close
+	end
+
+	defp parse_or_error(e, caller) do
+		e
+		|> inform_error(caller)
+	end
 
 	defp do_parse(device) do
 		case :file.position(device, {:eof, -128}) do
