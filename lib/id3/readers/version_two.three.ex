@@ -3,8 +3,27 @@ defmodule Polyvox.ID3.Readers.VersionTwoThree do
 
 	defstruct [:podcast, :summary, :title, :number, :participants, :year, :description, :show_notes, :genres, :artwork, :date, :url, :podcast_url, :uid, :s, :version, :size, :synced, :ext, :exp]
 
+	def parse_header_only(path) do
+		device = File.open(path)
+		acc = %__MODULE__{version: 2.3, s: 0}
+		
+		{device, acc}
+		|> parse_header
+		|> return_header
+	end
+
 	def parse(%{path: path, caller: caller}) do
 		File.open(path) |> parse_or_error(caller)
+	end
+
+	defp return_header({:stop, device}) do
+		File.close(device)
+		nil
+	end
+
+	defp return_header({device, acc}) do
+		File.close(device)
+		acc
 	end
 
 	defp parse_or_error({:ok, device}, caller) do
@@ -55,10 +74,6 @@ defmodule Polyvox.ID3.Readers.VersionTwoThree do
 		end
 	end
 
-	defp parse_frame(<< 0, 0, 0, 0 >>, device, acc) do
-		{device, acc}
-	end
-
 	defp process_frame(device, acc, key),
 		do: device |> process_frame(acc, key, &(&1))
 
@@ -73,6 +88,10 @@ defmodule Polyvox.ID3.Readers.VersionTwoThree do
 		|> parse_frames
 	end
 	
+	defp parse_frame(<< 0, 0, 0, 0 >>, device, acc) do
+		{device, acc}
+	end
+
 	defp parse_frame("WOAS", device, acc),
 		do: device |> process_frame(acc, :podcast_url)
 

@@ -44,9 +44,23 @@ defmodule Polyvox.ID3 do
         tag
       end  
 	"""
-	@spec get_reader(binary) :: {:ok, pid} | {:error, term}
+	@spec get_reader(Path.t) :: {:ok, pid} | {:error, term}
 	def get_reader(path) do
 		Polyvox.ID3.TagReaderSupervisor.get_reader(path)
+	end
+
+	@doc """
+	Removes any ID3 tags from the file located at path.
+
+  `from_path` and `to_path` are not allowed to point to
+	the same file.
+	"""
+	@spec remove_tags(Path.t, Path.t) :: :ok | {:error, term}
+	def remove_tags(from_path, to_path) do
+		case Polyvox.ID3.TagRemoverSupervisor.get_remover(from_path) do
+			{:ok, pid} -> pid |> Polyvox.ID3.TagRemover.remove(to_path)
+			error -> error
+		end
 	end
 
 	@doc """
