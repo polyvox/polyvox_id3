@@ -3,8 +3,19 @@ defmodule Polyvox.ID3.Readers.VersionOne do
 	
 	defstruct [:title, :participants, :podcast, :year, :summary, :number, :genres, :s, :e, :size]
 
+	def parse_header_only(path) do
+		File.open(path)
+		|> do_parse
+		|> close_file
+	end
+	
 	def parse(%{path: path, caller: caller}) do
 		File.open(path) |> parse_or_error(caller)
+	end
+
+	defp close_file({pid, struct}) do
+		File.close(pid)
+		struct
 	end
 
 	defp parse_or_error({:ok, device}, caller) do
@@ -19,6 +30,8 @@ defmodule Polyvox.ID3.Readers.VersionOne do
 		|> inform_error(caller)
 	end
 
+	defp do_parse({:error, _}), do: nil
+	defp do_parse({:ok, device}), do: do_parse(device)
 	defp do_parse(device) do
 		case :file.position(device, {:eof, -128}) do
 			{:ok, position} -> 

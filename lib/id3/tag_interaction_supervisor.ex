@@ -10,7 +10,8 @@ defmodule Polyvox.ID3.TagInteractionSupervisor do
 	def init(_) do
 		children = [
 			supervisor(Polyvox.ID3.TagReaderSupervisor, []),
-			supervisor(Polyvox.ID3.TagWriterSupervisor, [])
+			supervisor(Polyvox.ID3.TagWriterSupervisor, []),
+			supervisor(Polyvox.ID3.TagRemoverSupervisor, [])
 		]
 		supervise(children, strategy: :one_for_one)
 	end

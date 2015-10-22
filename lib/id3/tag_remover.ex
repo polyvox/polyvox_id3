@@ -14,14 +14,16 @@ defmodule Polyvox.ID3.TagRemover do
 	end
 
 	def handle_call({:remove, to_path}, caller, from_path) do
-		file_start = 0
-		file_end = 0
+		file_start = nil
+		file_end = nil
 
 		case Polyvox.ID3.Readers.VersionTwoThree.parse_header_only(from_path) do
 			%{size: size} -> file_start = size
+			_ -> file_start = 0
 		end
 		case Polyvox.ID3.Readers.VersionOne.parse_header_only(from_path) do
 		  %{s: tag_start} -> file_end = tag_start
+			_ -> file_end = nil
 		end
 
 		{:ok, device} = File.open(from_path, [:read])
@@ -31,18 +33,23 @@ defmodule Polyvox.ID3.TagRemover do
 		|> move(File.open(to_path, [:write]))
 		|> between(file_start, file_end)
 		|> close_files
+		|> package_reply
 	end
 
-	defp move({:error, _} = e), do: {e, nil}
-	defp move({:ok, from_device}, to_path), do: {File.open(to_path), from_device}
+	defp move({:ok, from_device}, {:ok, to_device}), do: {from_device, to_device, nil}
+	defp move({:ok, from_device}, {:error, reason}), do: {from_device, nil, reason}
+	defp move({:error, reason}, {:ok, to_device}),   do: {nil, to_device, reason}
+	defp move({:error, reason}, {:error, _}),        do: {nil, nil, reason}
 
-	defp between({{:error, reason}, from_device} = e, _, _), do: {:error, reason, from_device, nil}
-	defp between({{:ok, to_device}, from_device}, fs, fe) do
-		{:ok, _} = :file.position(from_device, {:bof, fs})
+	defp between({nil, nil, reason}, _, _), do: {:error, reason, nil, nil}
+	defp between({ fd, nil, reason}, _, _), do: {:error, reason, fd, nil}
+	defp between({nil,  td, reason}, _, _), do: {:error, reason, nil, td}
+	defp between({fd, td, _}, fs, fe) do
+		{:ok, _} = :file.position(fd, {:bof, fs})
 
-		case move(from_device, to_device, fs, fe) do
-			{:error, reason} -> {:error, reason, from_device, to_device}
-			_ -> {from_device, to_device}
+		case move(fd, td, fs, fe) do
+			{:error, reason} -> {:error, reason, td, fd}
+			_ -> {fd, td}
 		end
 	end
 
@@ -58,17 +65,28 @@ defmodule Polyvox.ID3.TagRemover do
 		:ok
 	end
 
-	defp move(_, _, e, e) do
-		:ok
+	defp move(from, to, e, e) do
+		{from, to}
 	end
 	
 	defp move(from, to, s, e) do
+		e = e || s + 1025
 		length = min(1024, e - s)
 		case IO.binread(from, length) do
 			{:error, _} = e -> e
+			:eof ->
+				{from, to}
 			data ->
 				IO.binwrite(to, data)
 				move(from, to, s + length, e)
 		end
+	end
+
+	def package_reply(:ok) do
+		{:stop, :normal, :ok, nil}
+	end
+
+	def package_reply({:error, reason}) do
+		{:stop, reason, nil, nil}
 	end
 end

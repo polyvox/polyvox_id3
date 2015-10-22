@@ -14,7 +14,7 @@ defmodule Polyvox.ID3.TagRemoverSupervisor do
 		supervise(prototype, strategy: :simple_one_for_one)
 	end
 
-	def get_reader(path) do
+	def get_remover(path) do
 		case Supervisor.start_child(__MODULE__, [path]) do
 			{:error, {:bad_return_value, {:error, e}}} -> {:error, e}
 			ok -> ok
