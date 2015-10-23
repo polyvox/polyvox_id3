@@ -19,74 +19,52 @@ defmodule Polyvox.ID3.TagRemover do
 
 		case Polyvox.ID3.Readers.VersionTwoThree.parse_header_only(from_path) do
 			%{size: size} -> file_start = size
-			_ -> file_start = 0
+			_ -> file_start = nil
 		end
 		case Polyvox.ID3.Readers.VersionOne.parse_header_only(from_path) do
 		  %{s: tag_start} -> file_end = tag_start
 			_ -> file_end = nil
 		end
 
-		{:ok, device} = File.open(from_path, [:read])
-		{:ok, _} = :file.position(device, {:bof, file_start})
+		from_status = File.open(from_path, [:read]) do
 
-		device
-		|> move(File.open(to_path, [:write]))
-		|> between(file_start, file_end)
+		from_status
+		|> bytes_between(file_start, file_end)
+		|> move(to_path)
 		|> close_files
 		|> package_reply
 	end
 
-	defp move({:ok, from_device}, {:ok, to_device}), do: {from_device, to_device, nil}
-	defp move({:ok, from_device}, {:error, reason}), do: {from_device, nil, reason}
-	defp move({:error, reason}, {:ok, to_device}),   do: {nil, to_device, reason}
-	defp move({:error, reason}, {:error, _}),        do: {nil, nil, reason}
-
-	defp between({nil, nil, reason}, _, _), do: {:error, reason, nil, nil}
-	defp between({ fd, nil, reason}, _, _), do: {:error, reason, fd, nil}
-	defp between({nil,  td, reason}, _, _), do: {:error, reason, nil, td}
-	defp between({fd, td, _}, fs, fe) do
-		{:ok, _} = :file.position(fd, {:bof, fs})
-
-		case move(fd, td, fs, fe) do
-			{:error, reason} -> {:error, reason, td, fd}
-			_ -> {fd, td}
-		end
+	defp bytes_between({:error, reason}, _, _), do: {:error, reason}
+	defp bytes_between({:ok, pid}, fs, fe) do
+		fs = fs || 0
+		{pid, fs, fe}
 	end
 
-	defp close_files({:error, reason, from_device, to_device}) do
-		File.close(from_device)
-		File.close(to_device)
+	defp move({:error, reason}, _), do: {:error, reason}
+	defp move({from_pid, fs, fe}, to_path) do
+		{:ok, to_pid} = File.open(to_path, [:write])
+
+		
+		
+		{from_pid, to_pid}
+	end
+
+	defp close_files({:error, reason}) do
 		{:error, reason}
 	end
 
-	defp close_files({from_device, to_device}) do
-		File.close(from_device)
-		File.close(to_device)
+	defp close_files({from_pid, to_pid}) do
+		File.close(from_pid)
+		File.close(to_pid)
 		:ok
 	end
-
-	defp move(from, to, e, e) do
-		{from, to}
-	end
 	
-	defp move(from, to, s, e) do
-		e = e || s + 1025
-		length = min(1024, e - s)
-		case IO.binread(from, length) do
-			{:error, _} = e -> e
-			:eof ->
-				{from, to}
-			data ->
-				IO.binwrite(to, data)
-				move(from, to, s + length, e)
-		end
-	end
-
-	def package_reply(:ok) do
+	defp package_reply(:ok) do
 		{:stop, :normal, :ok, nil}
 	end
 
-	def package_reply({:error, reason}) do
-		{:stop, reason, nil, nil}
+	defp package_reply({:error, reason}) do
+		{:stop, :normal, {:error, reason}, nil}
 	end
 end
