@@ -9,10 +9,20 @@ defmodule Polyvox.TagRemover.Test do
 		run_test("no-tags.mp3", "no-tags.copied.mp3", "", "")
 	end
 
+	test "removes version 1 tag" do
+		suffix = << "TAG", 0 :: integer-size(1000) >>
+		run_test("v1.mp3", "v1.removed.mp3", "", suffix)
+	end
+
+	test "removes version 2.3 tag" do
+		prefix = << "ID3", 3, 0, 0, 0, 0, 0, 125, 0 :: integer-size(1000) >>
+		run_test("v2.3.mp3", "v2.3.removed.mp3", prefix, "")
+	end
+
 	defp run_test(original_name, copied_name, prefix, suffix) do
 		content = prefix <> "Untagged content." <> suffix
 		{:ok, pid} = StringIO.open(content)
-		on_exit(fn () -> (File.rm(original_name); File.rm(copied_name); StringIO.close(pid)) end)
+		on_exit(fn () -> (File.rm(copied_name); File.rm(original_name)) end)
 
 		pid
 		|> IO.binstream(1024)
@@ -30,50 +40,4 @@ defmodule Polyvox.TagRemover.Test do
 
 		assert(stat.size == 17)
 	end
-
-	# test "removes version 1 tag" do
-	# 	content = "Untagged content."
-	# 	suffix = << "TAG", 0 :: integer-size(1000) >>
-	# 	{:ok, pid} = StringIO.open(content <> suffix)
-	# 	on_exit(fn () -> (File.rm("original.1.mp3"); File.rm("copied.1.mp3")) end)
-
-	# 	pid
-	# 	|> IO.binstream(1024)
-	# 	|> Stream.into(File.stream!("original.1.mp3", [:write]))
-	# 	|> Stream.run
-
-	# 	pid
-	# 	|> StringIO.close
-
-	# 	assert(:ok == Polyvox.ID3.remove_tags("original.1.mp3", "copied.1.mp3"))
-
-	# 	{:ok, stat} =
-	# 		"copied.1.mp3"
-	# 	|> File.stat
-
-	# 	assert(stat.size == String.length(content))
-	# end
-
-	# test "removes version 2.3 tag" do
-	# 	content = "Untagged content."
-	# 	prefix = << "ID3", 3, 0, 0, 0, 0, 0, 30, 0 :: integer-size(240) >>
-	# 	{:ok, pid} = StringIO.open(prefix <> content)
-	# 	on_exit(fn () -> (File.rm("original.2.3.mp3"); File.rm("copied.2.3.mp3")) end)
-
-	# 	pid
-	# 	|> IO.binstream(1024)
-	# 	|> Stream.into(File.stream!("original.2.3.mp3", [:write]))
-	# 	|> Stream.run
-
-	# 	pid
-	# 	|> StringIO.close
-
-	# 	assert(:ok == Polyvox.ID3.remove_tags("original.2.3.mp3", "copied.2.3.mp3"))
-
-	# 	# {:ok, stat} =
-	# 	# 	"copied.1.mp3"
-	# 	# |> File.stat
-
-	# 	# assert(stat.size == String.length(content))
-	# end
 end
