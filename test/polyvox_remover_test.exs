@@ -3,6 +3,7 @@ defmodule Polyvox.TagRemover.Test do
 
 	test "does nothing with an untagged file" do
 		{:ok, pid} = StringIO.open("Untagged content.")
+		on_exit(fn () -> (File.rm("original.mp3"); File.rm("copied.mp3")) end)
 
 		pid
 		|> IO.binstream(1024)
@@ -45,5 +46,28 @@ defmodule Polyvox.TagRemover.Test do
 		|> File.stat
 
 		assert(stat.size == String.length(content))
+	end
+
+	test "removes version 2.3 tag" do
+		content = "Untagged content."
+		prefix = << "ID3", 3, 0, 0, 0, 0, 0, 30, 0 :: integer-size(240) >>
+		{:ok, pid} = StringIO.open(prefix <> content)
+		on_exit(fn () -> (File.rm("original.2.3.mp3"); File.rm("copied.2.3.mp3")) end)
+
+		pid
+		|> IO.binstream(1024)
+		|> Stream.into(File.stream!("original.2.3.mp3", [:write]))
+		|> Stream.run
+
+		pid
+		|> StringIO.close
+
+		assert(:ok == Polyvox.ID3.remove_tags("original.2.3.mp3", "copied.2.3.mp3"))
+
+		# {:ok, stat} =
+		# 	"copied.1.mp3"
+		# |> File.stat
+
+		# assert(stat.size == String.length(content))
 	end
 end

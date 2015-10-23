@@ -29,7 +29,7 @@ defmodule Polyvox.ID3.TagRemover do
 		{:ok, device} = File.open(from_path, [:read])
 		{:ok, _} = :file.position(device, {:bof, file_start})
 
-		File.open(from_path, [:read])
+		device
 		|> move(File.open(to_path, [:write]))
 		|> between(file_start, file_end)
 		|> close_files

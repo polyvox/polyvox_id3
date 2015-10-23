@@ -13,6 +13,7 @@ defmodule Polyvox.ID3.Readers.VersionOne do
 		File.open(path) |> parse_or_error(caller)
 	end
 
+	defp close_file(nil), do: nil
 	defp close_file({pid, struct}) do
 		File.close(pid)
 		struct
