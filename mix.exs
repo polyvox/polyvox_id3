@@ -8,7 +8,9 @@ defmodule Polyvox.ID3.Mixfile do
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      deps: deps,
-		 docs: docs]
+		 docs: docs,
+		 description: description,
+		 package: package]
   end
 
   # Configuration for the OTP application
@@ -35,5 +37,19 @@ defmodule Polyvox.ID3.Mixfile do
 
 	defp docs do
 		[extras: ["README.md"], main: "extra-readme"]
+	end
+
+	defp description do
+		"""
+		A podcast-centric ID3 library for parsing and writing ID3 tags.
+		"""
+	end
+
+	defp package do
+		[maintainers: ["Curtis Schlak <realistschuckle@gmail.com>"],
+		 licenses: ["GPL-3.0"],
+		 links: %{"GitHub" => "https://github.com/polyvox/polyvox_id3",
+							"Docs" => "http://polyvox.github.io/polyvox_id3",
+							"Sponsor" => "http://polyvox.fm"}]
 	end
 end
