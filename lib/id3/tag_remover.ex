@@ -1,4 +1,6 @@
 defmodule Polyvox.ID3.TagRemover do
+	@moduledoc false
+	
 	use GenServer
 
 	def remove(pid, to_path) do

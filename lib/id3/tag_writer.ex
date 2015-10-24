@@ -139,13 +139,18 @@ defmodule Polyvox.ID3.TagWriter do
 		GenServer.call(pid, {:stream, opts})
 	end
 
-	@doc "Closes the writer and stops the process."
+	@doc """
+	Closes the writer and stops the process.
+
+  Use [`Polyvox.ID3.get_writer/1`](./Polyvox.ID3.html#get_writer/1)
+	to get a tag reader.
+	"""
 	@spec close(pid) :: :ok
 	def close(pid) do
 		GenServer.cast(pid, :close)
 	end
 
-	@doc "Starts the process and links it to the current process."
+	@doc false
 	@spec start_link(Stream.t) :: {:ok, pid} | {:error, term}
 	def start_link(stream) do
 		GenServer.start_link(__MODULE__, stream)
