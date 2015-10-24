@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/polyvox/polyvox_id3.svg?branch=master)](https://travis-ci.org/polyvox/polyvox_id3)
+[![Build Status](https://travis-ci.org/polyvox/polyvox_id3.svg?branch=develop)](https://travis-ci.org/polyvox/polyvox_id3)
 
 # Polyvox.ID3
 
