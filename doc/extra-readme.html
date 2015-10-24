@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>README – polyvox_id3 v0.1.0</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="ExDoc v0.10.0">
+    <link rel="stylesheet" href="dist/app.css" />
+    <script src="dist/sidebar_items.js"></script>
+  </head>
+  <body data-type="extras">
+
+<div class="main">
+<button class="sidebar-toggle">
+  <i class="icon-menu"></i>
+</button>
+<section class="sidebar">
+  <button class="sidebar-toggle">
+    <i class="icon-menu"></i>
+  </button>
+
+  
+  <a href="extra-readme.html" class="sidebar-projectLink">
+    <div class="sidebar-projectDetails">
+      <h1 class="sidebar-projectName">
+        polyvox_id3
+      </h1>
+      <h2 class="sidebar-projectVersion">
+        v0.1.0
+      </h2>
+    </div>
+    
+  </a>
+
+  <div class="sidebar-search">
+    <i class="icon-search"></i>
+    <input type="text" class="sidebar-searchInput" placeholder="search" autocomplete="off" />
+  </div>
+
+  <ul class="sidebar-listNav">
+    <li><a id="extras-list" href="#full-list">Pages</a></li>
+
+    
+      <li><a id="modules-list" href="#full-list">Modules</a></li>
+    
+
+    
+
+    
+      <li><a id="protocols-list" href="#full-list">Protocols</a></li>
+    
+  </ul>
+
+  <ul id="full-list" class="sidebar-fullList"></ul>
+  <div class="sidebar-noResults"></div>
+</section>
+
+<section class="content">
+  <div id="content" class="content-inner">
+
+
+<p><a href="https://travis-ci.org/polyvox/polyvox_id3"><img src="https://travis-ci.org/polyvox/polyvox_id3.svg?branch=master" alt="Build Status"/></a></p>
+<h1>Polyvox.ID3</h1>
+<p>A podcast-centric ID3 library for parsing and writing ID3 tags.</p>
+<h2 id="ID3-tag-support"> ID3 tag support</h2><p>In this parlance, a podcast-centric ID3 library supports the following
+information for ID3 tags.</p>
+<table>
+<colgroup>
+<col align="left">
+<col align="left">
+<col align="center">
+<col align="center">
+<col align="left">
+</colgroup>
+<thead>
+<tr>
+<th>Name</th><th>Example</th><th>v1†</th><th>v2.3 frame</th><th>Atom</th>
+</tr>
+</thead>
+<tr>
+<td>Podcast name</td><td>polyvox</td><td>X</td><td>TALB</td><td><code class="inline">:podcast</code></td>
+</tr>
+<tr>
+<td>Episode title</td><td>Beefsteak Handshake</td><td>X</td><td>TIT2</td><td><code class="inline">:title</code></td>
+</tr>
+<tr>
+<td>Episode number</td><td>1</td><td>X</td><td>TRCK</td><td><code class="inline">:number</code></td>
+</tr>
+<tr>
+<td>Participants</td><td>Bryan, Heather, and Curtis</td><td>X</td><td>TPE1</td><td><code class="inline">:participants</code></td>
+</tr>
+<tr>
+<td>Year recorded</td><td>2015</td><td>X</td><td>TYER</td><td><code class="inline">:year</code></td>
+</tr>
+<tr>
+<td>Summary</td><td>Our inaugural podcast</td><td>X</td><td>TIT3</td><td><code class="inline">:summary</code></td>
+</tr>
+<tr>
+<td>Description</td><td>In our inaugural podcast, we start with the underhandedness…</td><td></td><td>COMM</td><td><code class="inline">:description</code></td>
+</tr>
+<tr>
+<td>Show notes</td><td>What did we talk about? &lt;ul&gt;&lt;li&gt;The recent…</td><td></td><td>TXXX</td><td><code class="inline">:show_notes</code></td>
+</tr>
+<tr>
+<td>Genres</td><td>Personal Journals</td><td>X</td><td>TCON</td><td><code class="inline">:genres</code></td>
+</tr>
+<tr>
+<td>Episode artwork</td><td>Pretty picture :)</td><td></td><td>APIC</td><td><code class="inline">:artwork</code></td>
+</tr>
+<tr>
+<td>Month/date recorded</td><td>June 3</td><td></td><td>TDAT</td><td><code class="inline">:date</code></td>
+</tr>
+<tr>
+<td>Episode Web page</td><td><a href="http://polyvox.audio/podcasts/1.html">http://polyvox.audio/podcasts/1.html</a></td><td></td><td>WOAF</td><td><code class="inline">:url</code></td>
+</tr>
+<tr>
+<td>Podcast Web page</td><td><a href="http://polyvox.audio">http://polyvox.audio</a></td><td></td><td>WOAS</td><td><code class="inline">:podcast_url</code></td>
+</tr>
+<tr>
+<td>Unique Identifier</td><td>2CA119D7-1A5D-4CBE-BE5D-06A001B53B52</td><td></td><td>UFID</td><td><code class="inline">:uid</code></td>
+</tr>
+</table>
+<p>† <strong>A note about v1 ID3 tags</strong> The podcast name, episode title, and participants
+can have no more than 30 characters. The summary can have no more than 28
+characters. Don’t worry, though: most podcast players use the v2.3 tags without
+a problem.</p>
+
+    <footer class="footer">
+      <p>
+        <span class="line">
+          Built using
+          <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" rel="help" target="_blank">ExDoc</a> (v0.10.0),
+        </span>
+        <span class="line">
+          designed by
+          <a href="https://twitter.com/dignifiedquire" target="_blank" title="@dignifiedquire">Friedel Ziegelmayer</a>.
+          </span>
+      </p>
+    </footer>
+  </div>
+</section>
+</div>
+    <script src="dist/app.js"></script>
+  </body>
+</html>
+
