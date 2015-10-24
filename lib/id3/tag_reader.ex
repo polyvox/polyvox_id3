@@ -11,9 +11,7 @@ defmodule Polyvox.ID3.TagReader do
 
 	defstruct [:v1, :v2_3]
 
-	@doc """
-	Starts a tag reader for the file at the specified path.
-	"""
+	@doc false
 	@spec start_link(binary) :: {:ok, pid} | {:error, term}
 	def start_link(path) do
 		GenServer.start_link(__MODULE__, path)
@@ -45,6 +43,9 @@ defmodule Polyvox.ID3.TagReader do
 
 	@doc """
 	Closes the provided tag reader.
+
+  Use [`Polyvox.ID3.get_reader/1`](./Polyvox.ID3.html#get_reader/1)
+	to get a tag reader.
 	"""
 	@spec close(pid) :: :ok
 	def close(tag_reader) do

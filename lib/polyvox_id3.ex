@@ -8,6 +8,7 @@ defmodule Polyvox.ID3 do
 
   # See http://elixir-lang.org/docs/stable/elixir/Application.html
   # for more information on OTP Applications
+	@doc false
   def start(_, _) do
 		Polyvox.ID3.TagInteractionSupervisor.start_link
   end

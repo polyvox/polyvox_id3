@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Polyvox.ID3.TagWriter – polyvox_id3 v0.0.1</title>
+    <title>Polyvox.ID3.TagWriter – polyvox_id3 v0.1.0</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.10.0">
     <link rel="stylesheet" href="dist/app.css" />
@@ -28,7 +28,7 @@
         polyvox_id3
       </h1>
       <h2 class="sidebar-projectVersion">
-        v0.0.1
+        v0.1.0
       </h2>
     </div>
     
@@ -193,15 +193,6 @@ writer</p>
 </div>
 <div class="summary-row">
   <div class="summary-signature">
-    <a href="#start_link/1">start_link(stream)</a>
-  </div>
-  
-    <div class="summary-synopsis"><p>Starts the process and links it to the current process</p>
-</div>
-  
-</div>
-<div class="summary-row">
-  <div class="summary-signature">
     <a href="#stream/2">stream(pid, opts \\ [v1: true, v2_3: true])</a>
   </div>
   
@@ -320,6 +311,8 @@ stream. By default, the writer will write both version 1 and 2.3 tags</p>
   
   <section class="docstring">
     <p>Closes the writer and stops the process.</p>
+<p> Use <a href="./Polyvox.ID3.html#get_writer/1"><code class="inline">Polyvox.ID3.get_writer/1</code></a>
+to get a tag reader.</p>
 
   </section>
 </div>
@@ -561,29 +554,6 @@ corresponding method with the same name.</p>
   
   <section class="docstring">
     <p>Sets the show notes for the episode.</p>
-
-  </section>
-</div>
-<div class="detail" id="start_link/1">
-  <div class="detail-header">
-    <a href="#start_link/1" class="detail-link" title="Link to this function">
-      <i class="icon-link"></i>
-    </a>
-    <span class="signature">start_link(stream)</span>
-      
-  </div>
-  
-    <div class="specs">
-      <h4 class="specs-title">Specs</h4>
-      <div class="specs-list">
-        
-          <pre><code class="elixir">start_link(<a href="http://elixir-lang.org/docs/stable/elixir/Stream.html#t:t/0">Stream.t</a>) :: {:ok, pid} | {:error, term}</code></pre>
-        
-      </div>
-    </div>
-  
-  <section class="docstring">
-    <p>Starts the process and links it to the current process.</p>
 
   </section>
 </div>

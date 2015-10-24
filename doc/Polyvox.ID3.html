@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Polyvox.ID3 – polyvox_id3 v0.0.1</title>
+    <title>Polyvox.ID3 – polyvox_id3 v0.1.0</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.10.0">
     <link rel="stylesheet" href="dist/app.css" />
@@ -28,7 +28,7 @@
         polyvox_id3
       </h1>
       <h2 class="sidebar-projectVersion">
-        v0.0.1
+        v0.1.0
       </h2>
     </div>
     
@@ -112,10 +112,10 @@ prepends and appends ID3 tags to another stream</p>
 </div>
 <div class="summary-row">
   <div class="summary-signature">
-    <a href="#start/2">start(, )</a>
+    <a href="#remove_tags/2">remove_tags(from_path, to_path)</a>
   </div>
   
-    <div class="summary-synopsis"><p>Callback implementation for <code class="inline">c::application.start/2</code></p>
+    <div class="summary-synopsis"><p>Removes any ID3 tags from the file located at path</p>
 </div>
   
 </div>
@@ -153,7 +153,7 @@ prepends and appends ID3 tags to another stream</p>
       <h4 class="specs-title">Specs</h4>
       <div class="specs-list">
         
-          <pre><code class="elixir">get_reader(binary) :: {:ok, pid} | {:error, term}</code></pre>
+          <pre><code class="elixir">get_reader(<a href="http://elixir-lang.org/docs/stable/elixir/Path.html#t:t/0">Path.t</a>) :: {:ok, pid} | {:error, term}</code></pre>
         
       </div>
     </div>
@@ -227,17 +227,28 @@ writer
 
   </section>
 </div>
-<div class="detail" id="start/2">
+<div class="detail" id="remove_tags/2">
   <div class="detail-header">
-    <a href="#start/2" class="detail-link" title="Link to this function">
+    <a href="#remove_tags/2" class="detail-link" title="Link to this function">
       <i class="icon-link"></i>
     </a>
-    <span class="signature">start(, )</span>
+    <span class="signature">remove_tags(from_path, to_path)</span>
       
   </div>
   
+    <div class="specs">
+      <h4 class="specs-title">Specs</h4>
+      <div class="specs-list">
+        
+          <pre><code class="elixir">remove_tags(<a href="http://elixir-lang.org/docs/stable/elixir/Path.html#t:t/0">Path.t</a>, <a href="http://elixir-lang.org/docs/stable/elixir/Path.html#t:t/0">Path.t</a>) :: :ok | {:error, term}</code></pre>
+        
+      </div>
+    </div>
+  
   <section class="docstring">
-    <p>Callback implementation for <code class="inline">c::application.start/2</code>.</p>
+    <p>Removes any ID3 tags from the file located at path.</p>
+<p> <code class="inline">from_path</code> and <code class="inline">to_path</code> are not allowed to point to
+the same file.</p>
 
   </section>
 </div>
