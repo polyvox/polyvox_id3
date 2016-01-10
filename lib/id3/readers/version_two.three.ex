@@ -5,10 +5,10 @@ defmodule Polyvox.ID3.Readers.VersionTwoThree do
 
 	def parse_header_only(path) do
 		case File.open(path) do
-			{:error, reason} -> nil
+			{:error, _} -> nil
 			{:ok, device} ->
 				acc = %__MODULE__{version: 2.3, s: 0}
-		
+
 				{device, acc}
 				|> parse_header
 				|> return_header
@@ -90,7 +90,7 @@ defmodule Polyvox.ID3.Readers.VersionTwoThree do
 		|> accumulate(key, device, acc)
 		|> parse_frames
 	end
-	
+
 	defp parse_frame(<< 0, 0, 0, 0 >>, device, acc) do
 		{device, acc}
 	end

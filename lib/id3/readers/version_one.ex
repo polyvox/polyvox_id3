@@ -1,6 +1,6 @@
 defmodule Polyvox.ID3.Readers.VersionOne do
 	@moduledoc false
-	
+
 	defstruct [:title, :participants, :podcast, :year, :summary, :number, :genres, :s, :e, :size]
 
 	def parse_header_only(path) do
@@ -8,7 +8,7 @@ defmodule Polyvox.ID3.Readers.VersionOne do
 		|> do_parse
 		|> close_file
 	end
-	
+
 	def parse(%{path: path, caller: caller}) do
 		File.open(path) |> parse_or_error(caller)
 	end
@@ -35,7 +35,7 @@ defmodule Polyvox.ID3.Readers.VersionOne do
 	defp do_parse({:ok, device}), do: do_parse(device)
 	defp do_parse(device) do
 		case :file.position(device, {:eof, -128}) do
-			{:ok, position} -> 
+			{:ok, position} ->
 				tag = device |> IO.binread(128) |> match_tag(position, position + 128)
 				{device, tag}
 			e -> {device, e}
@@ -94,13 +94,14 @@ defmodule Polyvox.ID3.Readers.VersionOne do
 		end
 	end
 
-	defp convert_integer(s), do: s |> String.to_char_list |> List.first
+	defp convert_integer(<< b >> <> _), do: b
+  defp convert_integer(_), do: 0
 
 	defp send_to({device, {:error, reason}}, caller) do
 		inform_error({:error, reason}, caller)
 		device
 	end
-	
+
 	defp send_to({device, content}, caller) do
 		send(caller, {:v1, content})
 		device
