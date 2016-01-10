@@ -5,9 +5,9 @@ defmodule Polyvox.ID3.TagWriter do
   You should get a reference to a tag writer through the
 	[`Polyvox.ID3.get_writer`](./Polyvox.ID3.html#get_writer/1) method.
 	"""
-	
+
 	use GenServer
-	
+
 	defstruct [:file_stream, :summary, :podcast, :title, :number, :participants, :year, :description, :show_notes, :genres, :artwork, :date, :url, :podcast_url, :uid]
 
 	@doc """
@@ -99,7 +99,7 @@ defmodule Polyvox.ID3.TagWriter do
   __Note: This is not yet implemented because it's not MVP.__
   """
 	@spec artwork(pid, Stream.t) :: pid
-	def artwork(pid, value) do
+	def artwork(pid, _) do
 		pid
 	end
 
@@ -182,7 +182,7 @@ defmodule Polyvox.ID3.TagWriter do
 		if opts[:v2_3] do
 			streams = [Polyvox.ID3.Writers.VersionTwoThree.stream(state) | streams]
 		end
-		
+
 		streams |> Stream.concat
 	end
 end

@@ -4,7 +4,7 @@ defmodule Polyvox.TagRemover.Test do
 	test "returns error on file that does not exist" do
 		assert({:error, :enoent} == Polyvox.ID3.remove_tags("unknown.mp3", "whatever.mp3"))
 	end
-	
+
 	test "does nothing with an untagged file" do
 		run_test("no-tags.mp3", "no-tags.copied.mp3", "", "")
 	end
@@ -19,13 +19,24 @@ defmodule Polyvox.TagRemover.Test do
 		run_test("v2.3.mp3", "v2.3.removed.mp3", prefix, "")
 	end
 
+	test "removes version 2.4 tag" do
+		prefix = << "ID3", 4, 0, 0, 0, 0, 0, 125, 0 :: integer-size(1000) >>
+		run_test("v2.4.mp3", "v2.4.removed.mp3", prefix, "")
+	end
+
+	test "removes both version 1 and version 2.3 tags" do
+		prefix = << "ID3", 3, 0, 0, 0, 0, 0, 125, 0 :: integer-size(1000) >>
+		suffix = << "TAG", 0 :: integer-size(1000) >>
+		run_test("v2.3.mp3", "v2.3.removed.mp3", prefix, suffix)
+	end
+
 	defp run_test(original_name, copied_name, prefix, suffix) do
 		content = prefix <> "Untagged content." <> suffix
 		{:ok, pid} = StringIO.open(content)
 		on_exit(fn () -> (File.rm(copied_name); File.rm(original_name)) end)
 
 		pid
-		|> IO.binstream(1024)
+		|> IO.binstream(4096)
 		|> Stream.into(File.stream!(original_name, [:write]))
 		|> Stream.run
 

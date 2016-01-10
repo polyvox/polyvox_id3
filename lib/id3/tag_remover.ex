@@ -1,10 +1,10 @@
 defmodule Polyvox.ID3.TagRemover do
 	@moduledoc false
-	
+
 	use GenServer
 
 	def remove(pid, to_path) do
-		GenServer.call(pid, {:remove, to_path})
+		GenServer.call(pid, {:remove, to_path}, :infinity)
 	end
 
 	def start_link(from_path) do
@@ -16,14 +16,25 @@ defmodule Polyvox.ID3.TagRemover do
 	end
 
 	def handle_call({:remove, to_path}, _, from_path) do
-		case Polyvox.ID3.Readers.VersionTwoThree.parse_header_only(from_path) do
-			%{size: size} -> file_start = size
-			_ -> file_start = 0
-		end
-		case Polyvox.ID3.Readers.VersionOne.parse_header_only(from_path) do
-			%{s: tag_start} -> file_end = tag_start
-			_ -> file_end = :eof
-		end
+		file_start =
+      case Polyvox.ID3.Readers.VersionTwoThree.parse_header_only(from_path) do
+			  %{size: size} -> size
+			  _ -> :no_size
+		  end
+
+    if file_start == :no_size do
+		  file_start =
+        case Polyvox.ID3.Readers.VersionTwoFour.parse_header_only(from_path) do
+			    %{size: size} -> size
+			    _ -> 0
+		    end
+    end
+
+		file_end =
+      case Polyvox.ID3.Readers.VersionOne.parse_header_only(from_path) do
+	      %{s: tag_start} -> tag_start
+        _ -> :eof
+		  end
 
 		file_start
 		|> file_contents_until(file_end)
@@ -48,19 +59,19 @@ defmodule Polyvox.ID3.TagRemover do
 			e -> e
 		end
 	end
-	
+
 	defp to_destination({fs, fe, from_path}, to_path) do
-		try do
-			File.stream!(from_path, [], 1)
-			|> Stream.take(fe)
-			|> Stream.drop(fs)
-			|> Stream.into(File.stream!(to_path))
-			|> Stream.run
-		rescue
-			e in File.Error -> {:error, e.reason}
-		end
-	end
-	
+    File.open(from_path, [:read], fn (fd_in) ->
+      File.open(to_path, [:write], fn (fd_out) ->
+        :file.position(fd_in, {:bof, fs})
+        case IO.binread(fd_in, fe - fs) do
+          {:error, _} = e -> e
+          data -> IO.binwrite(fd_out, data)
+        end
+      end)
+    end) && :ok
+  end
+
 	defp report_success(a) do
 		{:stop, :normal, a, nil}
 	end
