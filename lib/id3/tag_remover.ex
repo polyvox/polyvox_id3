@@ -50,7 +50,10 @@ defmodule Polyvox.ID3.TagRemover do
 		do: {fs, fe, from_path}
 
 	defp to_destination({0, :eof, from_path}, to_path) do
-		File.rename(from_path, to_path)
+		case File.copy(from_path, to_path) do
+      {:ok, _} -> :ok
+      e -> e
+    end
 	end
 
 	defp to_destination({fs, :eof, from_path}, to_path) do
